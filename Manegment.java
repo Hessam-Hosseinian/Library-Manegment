@@ -1,5 +1,7 @@
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Manegment {
 
@@ -149,24 +151,22 @@ public class Manegment {
         return "success";
     }
 
-    // TODO:
-    // // this method need another condition to say not-allowed
-    // public String removeStudent(String studentId) {
-    // Student student = students.get(studentId);
-    // if (student == null) {
-    // return "not-found";
-    // }
-    // for (Library library : new ArrayList<>(libraries.values())) {
-    // if (library.checkUserBorrows(studentId) != null) {
-    // return "not-allowed";
-    // }
-    // }
-    // if (student.getDebt() != 0) {
-    // return "not-allowed";
-    // }
-    // students.remove(studentId);
-    // return "success";
-    // }
+    public String removeStudent(String studentId) {
+        Student student = students.get(studentId);
+        if (student == null) {
+            return "not-found";
+        }
+        // for (Library library : new ArrayList<>(libraries.values())) {
+        // if (library.checkUserBorrows(studentId) != null) {
+        // return "not-allowed";
+        // }
+        // }
+        // if (student.getDebt() != 0) {
+        // return "not-allowed";
+        // }
+        students.remove(studentId);
+        return "success";
+    }
 
     public String addStaff(Staff staff) {
         if (staffs.get(staff.getStaffId()) != null) {
@@ -185,23 +185,49 @@ public class Manegment {
         return "success";
     }
 
-    // // TODO:
-    // // this method need another condition to say not-allowed
-    // public String removeStaff(String id) {
-    // Staff staff = staffs.get(id);
-    // if (staff == null) {
-    // return "not-found";
-    // }
-    // if (staff.getDebt() != 0) {
-    // return "not-allowed";
-    // }
-    // for (Library library : new ArrayList<>(libraries.values())) {
-    // if (library.checkUserBorrows(id) != null) {
-    // return "not-allowed";
-    // }
-    // }
-    // staffs.remove(id);
-    // return "success";
-    // }
+    public String removeStaff(String staffId) {
+        Staff staff = staffs.get(staffId);
+        if (staff == null) {
+            return "not-found";
+        }
+        // if (staff.getDebt() != 0) {
+        // return "not-allowed";
+        // }
+        // for (Library library : new ArrayList<>(libraries.values())) {
+        // if (library.checkUserBorrows(staffId) != null) {
+        // return "not-allowed";
+        // }
+        // }
+        staffs.remove(staffId);
+        return "success";
+    }
+
+    public String borrow(Borrow borrow, String password) {
+        if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
+            return "not-found";
+        }
+        if (borrow.isStudent()) {
+            Student student = students.get(borrow.getUserId());
+            if (!student.getPassword().equals(password)) {
+                return "invalid-pass";
+            }
+        } else {
+            Staff staff = staffs.get(borrow.getUserId());
+            if (!staff.getPassword().equals(password)) {
+                return "invalid-pass";
+            }
+        }
+        Library library = libraries.get(borrow.getLibraryId());
+        if (library == null) {
+            return "not-found";
+        }
+        if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
+            return "not-found";
+        }
+        // if (!library.borrow(borrow, countBorrow(borrow.getUserId()))) {
+        // return "not-allowed";
+        // }
+        return "success";
+    }
 
 }

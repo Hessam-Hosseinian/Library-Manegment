@@ -1,4 +1,6 @@
+
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -22,6 +24,99 @@ public class Library {
         this.books = new HashMap<>();
         this.theses = new HashMap<>();
         this.borrows = new HashMap<>();
+    }
+
+    public boolean borrow(Borrow borrow, int userBorrow) {
+        if (borrow.isStudent()) {
+            if (userBorrow < 3) {
+                if (isAllowed(borrow)) {
+                    return true;
+                }
+            }
+        } else {
+            if (userBorrow < 5) {
+                if (isAllowed(borrow)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int countBorrows(String userId) {
+        int count = 0;
+        for (ArrayList<Borrow> stuffBorrows : new ArrayList<>(borrows.values())) {
+            for (Borrow borrow : stuffBorrows) {
+                if (borrow.getUserId().equals(userId)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public int countStuffs(String stuffId) {
+        ArrayList<Borrow> myBorrow = borrows.get(stuffId);
+        if (myBorrow == null) {
+            return 0;
+        }
+        return myBorrow.size();
+    }
+
+    public boolean isAllowed(Borrow borrow) {
+        ArrayList<Borrow> borrows1 = borrows.get(borrow.getStuffId());
+        if (borrows1 == null) {
+            borrows1 = new ArrayList<>();
+
+        }
+        if (borrow.isBook()) {
+            if (countStuffs(borrow.getStuffId()) < books.get(borrow.getStuffId()).getCopyNumber()) {
+                borrows1.add(borrow);
+                borrows.put(borrow.getStuffId(), borrows1);
+                return true;
+            }
+            return false;
+        }
+        if (countStuffs(borrow.getStuffId()) == 0) {
+            borrows1.add(borrow);
+            borrows.put(borrow.getStuffId(), borrows1);
+            return true;
+        }
+        return false;
+    }
+
+    public Borrow checkUserBorrows(String userId) {
+        Borrow borr = null;
+        for (ArrayList<Borrow> borrows1 : new ArrayList<>(borrows.values())) {
+            for (Borrow borrow : borrows1) {
+                if (borrow.getUserId().equals(userId)) {
+                    if (borr == null) {
+                        borr = borrow;
+                    } else if (borr.getDate().getTime() < borrow.getDate().getTime()) {
+                        borr = borrow;
+                    }
+                }
+            }
+        }
+        return borr;
+    }
+
+    public Borrow checkUserBorrows(String userId, String stuffId) {
+        Borrow borr = null;
+        ArrayList<Borrow> hold = borrows.get(stuffId);
+        if (hold == null) {
+            return null;
+        }
+        for (Borrow borrow : hold) {
+            if (borrow.getUserId().equals(userId)) {
+                if (borr == null) {
+                    borr = borrow;
+                } else if (borr.getDate().getTime() < borrow.getDate().getTime()) {
+                    borr = borrow;
+                }
+            }
+        }
+        return borr;
     }
 
     public Book getBook(String bookId) {

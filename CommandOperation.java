@@ -1,3 +1,6 @@
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class CommandOperation {
     private Manegment manegment;
@@ -6,23 +9,23 @@ public class CommandOperation {
         this.manegment = new Manegment();
     }
 
-    public void input(String input) {
+    public void input(String input) throws ParseException {
         String[] command = input.split("#");
         String[] args = new String[] {};
         if (command.length > 1) {
             args = command[1].split("\\|");
         }
-
+        // !----------------------------------------------------------------- LIBRARY
         if (input.startsWith("add-library")) {
 
             addLibrary(args[0], args[1], args[2], Integer.valueOf(args[3]), args[4]);
         }
-
+        // !----------------------------------------------------------------- CATEGORY
         else if (input.startsWith("add-category")) {
 
             addCategory(args[0], args[1]);
         }
-
+        // !----------------------------------------------------------------- BOOK
         else if (input.startsWith("add-book")) {
             addBook(args[0], args[1], args[2], args[3], args[4], Integer.valueOf(args[5]), args[6], args[7]);
         }
@@ -39,32 +42,34 @@ public class CommandOperation {
         else if (input.startsWith("remove-book")) {
             removeBook(args[0], args[1]);
         }
+        // !----------------------------------------------------------------- THESIS
 
         else if (input.startsWith("add-thesis")) {
             addThesis(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
         }
 
-        else if (input.startsWith("edit-book")) {
+        else if (input.startsWith("edit-thesis")) {
             editThesis(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
         }
 
-        // case "remove-book":
-        // removeBook(args[0], args[1]);
-        // break;
-        // case "remove-thesis":
-        // removeThesis(args[0], args[1]);
-        // break;
+        else if (input.startsWith("remove-thesis")) {
+            removeThesis(args[0], args[1]);
+        }
+        // !----------------------------------------------------------------- STUDENT
+
         else if (input.startsWith("add-student")) {
             addStudent(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 
-        } else if (input.startsWith("edit-student")) {
-            editStudent(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-
         }
 
-        // case "remove-student":
-        // removeStudent(args[0]);
-        // break;
+        else if (input.startsWith("edit-student")) {
+            editStudent(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+
+        } else if (input.startsWith("remove-student")) {
+            removeStudent(args[0]);
+        }
+        // !----------------------------------------------------------------- STAFF
+
         else if (input.startsWith("add-staff")) {
             addStaff(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 
@@ -75,12 +80,15 @@ public class CommandOperation {
 
         }
 
-        // case "remove-staff":
-        // removeStaff(args[0]);
-        // break;
-        // case "borrow":
-        // borrow(args[0], args[1], args[2], args[3], args[4], args[5]);
-        // break;
+        else if (input.startsWith("remove-staff")) {
+            removeStaff(args[0]);
+        }
+        // !----------------------------------------------------------------- BORROW
+
+        else if (input.startsWith("borrow")) {
+            borrow(args[0], args[1], args[2], args[3], args[4], args[5]);
+        }
+
         // case "return":
         // returning(args[0], args[1], args[2], args[3], args[4], args[5]);
         // break;
@@ -108,7 +116,6 @@ public class CommandOperation {
 
     public void addLibrary(String libraryId, String libraryName, String foundationYear, int deskNumber,
             String address) {
-
         Library library = new Library(libraryId, libraryName, foundationYear, deskNumber, address);
         System.out.println(manegment.addLibrary(library));
 
@@ -133,6 +140,10 @@ public class CommandOperation {
         System.out.println(manegment.editBook(book));
     }
 
+    public void removeBook(String bookId, String libraryId) {
+        System.out.println(manegment.removeBook(bookId, libraryId));
+    }
+
     public void addThesis(String id, String name, String studentName, String advisor, String year, String categoryId,
             String libraryId) {
         Thesis thesis = new Thesis(id, name, studentName, advisor, year, categoryId,
@@ -147,13 +158,9 @@ public class CommandOperation {
         System.out.println((manegment.editThesis(thesis)));
     }
 
-    public void removeBook(String bookId, String libraryId) {
-        System.out.println(manegment.removeBook(bookId, libraryId));
+    public void removeThesis(String thesisId, String libraryId) {
+        System.out.println(manegment.removeThesis(thesisId, libraryId));
     }
-
-    // public void removeThesis(String thesisId, String libraryId) {
-    // System.out.println(center.removeThesis(thesisId, libraryId));
-    // }
 
     public void addStudent(String studentId, String password, String firstName, String lastName, String codeId,
             String birthday,
@@ -171,9 +178,9 @@ public class CommandOperation {
         System.out.println(manegment.editStudent(student));
     }
 
-    // public void removeStudent(String studentId) {
-    // System.out.println(manegment.removeStudent(studentId));
-    // }
+    public void removeStudent(String studentId) {
+        System.out.println(manegment.removeStudent(studentId));
+    }
 
     public void addStaff(String StaffId, String password, String firstName, String lastName, String codeId,
             String birthday,
@@ -191,19 +198,16 @@ public class CommandOperation {
         System.out.println(manegment.editStaff(staff));
     }
 
-    // public void removeStaff(String id) {
-    // System.out.println(center.removeStaff(id));
-    // }
+    public void removeStaff(String StaffId) {
+        System.out.println(manegment.removeStaff(StaffId));
+    }
 
-    // public void borrow(String userId, String pass, String libraryId, String
-    // stuffId, String strDate, String hour)
-    // throws ParseException {
-    // Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(strDate + " " +
-    // hour);
-    // Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
-    // System.out.println(center.borrow(borrow, pass));
-    // }
-
+    public void borrow(String userId, String pass, String libraryId, String stuffId, String strDate, String hour)
+            throws ParseException {
+        Date date = (Date) new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(strDate + " " + hour);
+        Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
+        System.out.println(manegment.borrow(borrow, pass));
+    }
     // public void returning(String userId, String pass, String libraryId, String
     // stuffId, String strDate, String hour)
     // throws ParseException {
