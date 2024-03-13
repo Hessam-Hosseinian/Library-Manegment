@@ -67,13 +67,11 @@ public class Manegment {
      */
     public String addBook(Book book) {
         Library library = libraries.get(book.getLibraryId());
-        if (library == null) {
-            return "not-found";
-        }
         Category category = categories.get(book.getCategoryId());
-        if (category == null) {
+        if (library == null || category == null) {
             return "not-found";
         }
+
         if (library.getBook(book.getBookId()) != null) {
             return "duplicate-id";
         }
@@ -90,20 +88,13 @@ public class Manegment {
      */
     public String editBook(Book book) {
         Library library = libraries.get(book.getLibraryId());
-        if (library == null) {
-
-            return "not-found";
-        }
         Category category = categories.get(book.getCategoryId());
-        if (category == null) {
-
-            return "not-found";
-        }
         Book book1 = library.getBook(book.getBookId());
-        if (book1 == null) {
+        if (library == null || category == null || book1 == null) {
 
             return "not-found";
         }
+
         book1.edit(book);
         return "success";
     }
@@ -122,15 +113,13 @@ public class Manegment {
      */
     public String removeBook(String bookId, String libraryId) {
         Library library = libraries.get(libraryId);
-        if (library == null) {
+        if (library == null || library.getBook(bookId) == null) {
             return "not-found";
         }
         if (library.countDocs(bookId) != 0) {
             return "not-allowed";
         }
-        if (library.getBook(bookId) == null) {
-            return "not-found";
-        }
+
         library.removeBook(bookId);
         return "success";
     }
@@ -147,13 +136,11 @@ public class Manegment {
      */
     public String addThesis(Thesis thesis) {
         Library library = libraries.get(thesis.getLibraryId());
-        if (library == null) {
-            return "not-found";
-        }
         Category category = categories.get(thesis.getCategoryId());
-        if (category == null) {
+        if (library == null || category == null) {
             return "not-found";
         }
+
         if (library.getThesis(thesis.getThesisID()) != null) {
             return "duplicate-id";
         }
@@ -170,17 +157,12 @@ public class Manegment {
      */
     public String editThesis(Thesis thesis) {
         Library library = libraries.get(thesis.getLibraryId());
-        if (library == null) {
-            return "not-found";
-        }
         Category category = categories.get(thesis.getCategoryId());
-        if (category == null) {
-            return "not-found";
-        }
         Thesis thesis1 = library.getThesis(thesis.getThesisID());
-        if (thesis1 == null) {
+        if (library == null || category == null || thesis1 == null) {
             return "not-found";
         }
+
         thesis1.edit(thesis);
         return "success";
     }
@@ -198,15 +180,13 @@ public class Manegment {
      */
     public String removeThesis(String thesisId, String libraryId) {
         Library library = libraries.get(libraryId);
-        if (library == null) {
+        if (library == null || library.getThesis(thesisId) == null) {
             return "not-found";
         }
         if (library.countDocs(thesisId) != 0) {
             return "not-allowed";
         }
-        if (library.getThesis(thesisId) == null) {
-            return "not-found";
-        }
+
         library.removeThesis(libraryId);
         return "success";
     }

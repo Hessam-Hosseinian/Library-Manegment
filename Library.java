@@ -27,6 +27,15 @@ public class Library {
         this.borrows = new HashMap<>();
     }
 
+    /**
+     * Processes a borrow operation for a user based on the provided Borrow object
+     * and the user's current borrow count.
+     * 
+     * @param borrow     The Borrow object representing the item to be borrowed.
+     * @param userBorrow The current number of items borrowed by the user.
+     * @return true if the borrow operation is successful, false
+     *         otherwise.
+     */
     public boolean borrow(Borrow borrow, int userBorrow) {
         if (borrow.isStudent()) {
             if (userBorrow < 3) {
@@ -44,6 +53,12 @@ public class Library {
         return false;
     }
 
+    /**
+     * Counts the number of items currently borrowed by a user.
+     * 
+     * @param userId The unique identifier of the user.
+     * @return The number of items currently borrowed by the user.
+     */
     public int countBorrows(String userId) {
         int count = 0;
         for (ArrayList<Borrow> docBorrows : new ArrayList<>(borrows.values())) {
