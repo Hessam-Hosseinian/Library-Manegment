@@ -88,6 +88,7 @@ public class Staff {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
+
     }
 
     public String getAddress() {
