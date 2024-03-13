@@ -89,9 +89,15 @@ public class CommandOperation {
             borrow(args[0], args[1], args[2], args[3], args[4], args[5]);
         }
 
-        // case "return":
-        // returning(args[0], args[1], args[2], args[3], args[4], args[5]);
-        // break;
+        else if (input.startsWith("return")) {
+            returning(args[0], args[1], args[2], args[3], args[4], args[5]);
+        }
+
+        else if (input.startsWith("search")) {
+            search(args[0]);
+
+        }
+
         // case "search":
         // search(args[0]);
         // break;
@@ -202,24 +208,31 @@ public class CommandOperation {
         System.out.println(manegment.removeStaff(StaffId));
     }
 
-    public void borrow(String userId, String pass, String libraryId, String stuffId, String strDate, String hour)
+    public void borrow(String userId, String password, String libraryId, String stuffId, String strDate, String hour)
             throws ParseException {
-        Date date = (Date) new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(strDate + " " + hour);
-        Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
-        System.out.println(manegment.borrow(borrow, pass));
-    }
-    // public void returning(String userId, String pass, String libraryId, String
-    // stuffId, String strDate, String hour)
-    // throws ParseException {
-    // Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm").parse(strDate + " " +
-    // hour);
-    // Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
-    // System.out.println(center.returning(borrow, pass));
-    // }
 
-    // public void search(String key) {
-    // System.out.println(center.search(key));
-    // }
+        java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
+
+        Date date = new Date(utilDate.getTime());
+
+        Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
+
+        System.out.println(manegment.borrow(borrow, password));
+
+    }
+
+    public void returning(String userId, String pass, String libraryId, String stuffId, String strDate, String hour)
+            throws ParseException {
+        java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
+
+        Date date = new Date(utilDate.getTime());
+        Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
+        System.out.println(manegment.returning(borrow, pass));
+    }
+
+    public void search(String key) {
+        System.out.println(manegment.search(key));
+    }
 
     // public void searchUser(String userId, String pass, String key) {
     // System.out.println(center.searchUser(userId, pass, key));

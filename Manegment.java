@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -228,6 +229,75 @@ public class Manegment {
         // return "not-allowed";
         // }
         return "success";
+    }
+
+    public String returning(Borrow borrow, String pass) {
+        if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
+            return "not-found";
+        }
+        if (borrow.isStudent()) {
+            Student student = students.get(borrow.getUserId());
+            if (!student.getPassword().equals(pass)) {
+                return "invalid-pass";
+            }
+
+        } else {
+            Staff staff = staffs.get(borrow.getUserId());
+            if (!staff.getPassword().equals(pass)) {
+                return "invalid-pass";
+            }
+        }
+        Library library = libraries.get(borrow.getLibraryId());
+        if (library == null) {
+            return "not-found";
+        }
+        if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
+            return "not-found";
+        }
+        Borrow borrowHelp = library.checkUserBorrows(borrow.getUserId(), borrow.getStuffId());
+        if (borrowHelp == null) {
+            return "not-found";
+        }
+        int debt = library.returning(borrowHelp, borrow.getDate());
+        if (debt == 0) {
+            return "success";
+        }
+        if (borrow.isStudent()) {
+            students.get(borrow.getUserId()).setDebt(debt);
+            return "" + debt;
+        }
+        staffs.get(borrow.getUserId()).setDebt(debt);
+        return "" + debt;
+    }
+
+    public String reportPenalties() {
+        int Penalties = 0;
+        for (Staff staff : staffs.values()) {
+            Penalties += staff.getDebt();
+        }
+        for (Student student : students.values()) {
+            Penalties += student.getDebt();
+        }
+        return "" + Penalties;
+    }
+
+    public StringBuilder search(String key) {
+        HashSet<String> output = new HashSet<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Library library : libraries.values()) {
+            output.addAll(library.search(key));
+        }
+        ArrayList<String> hold = new ArrayList<>(output);
+        Collections.sort(hold);
+        for (String str : hold) {
+            stringBuilder.append(str);
+            stringBuilder.append("|");
+        }
+        if (stringBuilder.length() == 0) {
+            return stringBuilder.append("not-found");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        return stringBuilder;
     }
 
 }

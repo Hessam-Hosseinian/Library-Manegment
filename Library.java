@@ -1,4 +1,5 @@
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import java.util.HashMap;
@@ -117,6 +118,41 @@ public class Library {
             }
         }
         return borr;
+    }
+
+    public int checkDebt(Borrow borrow, java.util.Date date) {
+        long firstMin = borrow.getDate().getTime() / 3600000;
+        long secondMin = date.getTime() / 3600000;
+        long periodTime = secondMin - firstMin;
+        if (borrow.isStudent()) {
+            if (borrow.isBook()) {
+                if (periodTime < (10 * 24)) {
+                    return 0;
+                }
+                return (int) ((periodTime - (10 * 24)) * 50);
+            }
+            if (periodTime < (7 * 24)) {
+                return 0;
+            }
+            return (int) ((periodTime - (7 * 24)) * 50);
+        }
+        if (borrow.isBook()) {
+            if (periodTime < (14 * 24)) {
+                return 0;
+            }
+            return (int) ((periodTime - (14 * 24)) * 100);
+        }
+        if (periodTime < (10 * 24)) {
+            return 0;
+        }
+        return (int) ((periodTime - (10 * 24)) * 100);
+    }
+
+    public int returning(Borrow borrow, java.util.Date date) {
+        ArrayList<Borrow> borrows1 = borrows.get(borrow.getStuffId());
+        int debt = checkDebt(borrow, date);
+        borrows1.remove(borrow);
+        return debt;
     }
 
     public Book getBook(String bookId) {
