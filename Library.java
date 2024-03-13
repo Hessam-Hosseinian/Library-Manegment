@@ -232,21 +232,37 @@ public class Library {
         return output;
     }
 
-    // public Point categoryReport(String categoryId) {
-    // int bookNum = 0;
-    // int thesisNum = 0;
-    // for (Book book : books.values()) {
-    // if (book.getCategoryId().equals(categoryId)) {
-    // bookNum += book.getNumBook();
-    // }
-    // }
-    // for (Thesis thesis : theses.values()) {
-    // if (thesis.getCategoryId().equals(categoryId)) {
-    // thesisNum++;
-    // }
-    // }
-    // return new Point(bookNum, thesisNum);
-    // }
+    /**
+     * Counts the number of books in the specified category in the library.
+     * 
+     * @param categoryId The unique identifier of the category.
+     * @return The number of books in the specified category.
+     */
+    public int countBooksInCategory(String categoryId) {
+        int count = 0;
+        for (Book book : books.values()) {
+            if (book.getCategoryId().equals(categoryId)) {
+                count += book.getCopyNumber();
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Counts the number of theses in the specified category in the library.
+     * 
+     * @param categoryId The unique identifier of the category.
+     * @return The number of theses in the specified category.
+     */
+    public int countThesesInCategory(String categoryId) {
+        int count = 0;
+        for (Thesis thesis : theses.values()) {
+            if (thesis.getCategoryId().equals(categoryId)) {
+                count++;
+            }
+        }
+        return count;
+    }
 
     public String libraryReport() {
         int allBookNum = 0;

@@ -67,11 +67,13 @@ public class Manegment {
      */
     public String addBook(Book book) {
         Library library = libraries.get(book.getLibraryId());
-        Category category = categories.get(book.getCategoryId());
-        if (library == null || category == null) {
+        if (library == null) {
             return "not-found";
         }
-
+        Category category = categories.get(book.getCategoryId());
+        if (category == null) {
+            return "not-found";
+        }
         if (library.getBook(book.getBookId()) != null) {
             return "duplicate-id";
         }
@@ -88,13 +90,20 @@ public class Manegment {
      */
     public String editBook(Book book) {
         Library library = libraries.get(book.getLibraryId());
-        Category category = categories.get(book.getCategoryId());
-        Book book1 = library.getBook(book.getBookId());
-        if (library == null || category == null || book1 == null) {
+        if (library == null) {
 
             return "not-found";
         }
+        Category category = categories.get(book.getCategoryId());
+        if (category == null) {
 
+            return "not-found";
+        }
+        Book book1 = library.getBook(book.getBookId());
+        if (book1 == null) {
+
+            return "not-found";
+        }
         book1.edit(book);
         return "success";
     }
@@ -113,13 +122,15 @@ public class Manegment {
      */
     public String removeBook(String bookId, String libraryId) {
         Library library = libraries.get(libraryId);
-        if (library == null || library.getBook(bookId) == null) {
+        if (library == null) {
             return "not-found";
         }
         if (library.countDocs(bookId) != 0) {
             return "not-allowed";
         }
-
+        if (library.getBook(bookId) == null) {
+            return "not-found";
+        }
         library.removeBook(bookId);
         return "success";
     }
@@ -136,11 +147,13 @@ public class Manegment {
      */
     public String addThesis(Thesis thesis) {
         Library library = libraries.get(thesis.getLibraryId());
-        Category category = categories.get(thesis.getCategoryId());
-        if (library == null || category == null) {
+        if (library == null) {
             return "not-found";
         }
-
+        Category category = categories.get(thesis.getCategoryId());
+        if (category == null) {
+            return "not-found";
+        }
         if (library.getThesis(thesis.getThesisID()) != null) {
             return "duplicate-id";
         }
@@ -157,12 +170,17 @@ public class Manegment {
      */
     public String editThesis(Thesis thesis) {
         Library library = libraries.get(thesis.getLibraryId());
-        Category category = categories.get(thesis.getCategoryId());
-        Thesis thesis1 = library.getThesis(thesis.getThesisID());
-        if (library == null || category == null || thesis1 == null) {
+        if (library == null) {
             return "not-found";
         }
-
+        Category category = categories.get(thesis.getCategoryId());
+        if (category == null) {
+            return "not-found";
+        }
+        Thesis thesis1 = library.getThesis(thesis.getThesisID());
+        if (thesis1 == null) {
+            return "not-found";
+        }
         thesis1.edit(thesis);
         return "success";
     }
@@ -180,13 +198,15 @@ public class Manegment {
      */
     public String removeThesis(String thesisId, String libraryId) {
         Library library = libraries.get(libraryId);
-        if (library == null || library.getThesis(thesisId) == null) {
+        if (library == null) {
             return "not-found";
         }
         if (library.countDocs(thesisId) != 0) {
             return "not-allowed";
         }
-
+        if (library.getThesis(thesisId) == null) {
+            return "not-found";
+        }
         library.removeThesis(libraryId);
         return "success";
     }
@@ -539,20 +559,33 @@ public class Manegment {
         return "" + Penalties;
     }
 
-    // public String categoryReport(String categoryId) {
-    // Point hold;
-    // Point output = new Point();
+    /**
+     * Generates a report for the specified category, showing the number of books
+     * and theses in that category.
+     * 
+     * @param categoryId The unique identifier of the category for which the report
+     *                   is requested.
+     * @return A String representation of the report for the specified category, or
+     *         "not-found" if the category is not found.
+     */
+    public String categoryReport(String categoryId) {
+        Category category = categories.get(categoryId);
+        if (category == null) {
+            return "not-found";
+        }
 
-    // if (categories.get(categoryId) == null) {
-    // return "not-found";
-    // }
-    // for (Library library : libraries.values()) {
-    // hold = library.categoryReport(categoryId);
-    // output.x += hold.x;
-    // output.y += hold.y;
-    // }
-    // return output.x + " " + output.y;
-    // }
+        int booksCount = 0;
+        int thesesCount = 0;
+
+        // Iterate over all libraries to count books and theses in the specified
+        // category
+        for (Library library : libraries.values()) {
+            booksCount += library.countBooksInCategory(categoryId);
+            thesesCount += library.countThesesInCategory(categoryId);
+        }
+
+        return booksCount + " " + thesesCount;
+    }
 
     /**
      * Generates a report for the specified library.

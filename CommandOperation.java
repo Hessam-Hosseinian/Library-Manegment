@@ -115,9 +115,9 @@ public class CommandOperation {
             libraryReport(args[0]);
         }
 
-        // else if (input.contains("category-report")) {
-        // categoryReport(args[0]);
-        // }
+        else if (input.contains("category-report")) {
+            categoryReport(args[0]);
+        }
 
         else if (input.contains("report-passed-deadline")) {
             reportPasseDeadline(args[0], args[1], args[2]);
@@ -447,9 +447,9 @@ public class CommandOperation {
         System.out.println(manegment.reportPenalties());
     }
 
-    // public void categoryReport(String categoryId) {
-    // System.out.println(manegment.categoryReport(categoryId));
-    // }
+    public void categoryReport(String categoryId) {
+        System.out.println(manegment.categoryReport(categoryId));
+    }
 
     /**
      * Generates a report for a specific library in the management system.
