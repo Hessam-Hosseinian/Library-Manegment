@@ -242,33 +242,30 @@ public class Library {
     public HashSet<String> search(String key) {
         HashSet<String> output = new HashSet<>();
         for (Book book : books.values()) {
-            if (book.getCopyNumber() - countBorrowedBooksById(book.getBookId()) != 0) {
 
-                if (book.getTitle().toLowerCase().contains(key.toLowerCase())) {
-                    output.add(book.getBookId());
-                }
-                if (book.getAuthor().toLowerCase().contains(key.toLowerCase())) {
-                    output.add(book.getBookId());
-                }
-                if (book.getPublisher().toLowerCase().contains(key.toLowerCase())) {
-                    output.add(book.getBookId());
-                }
+            if (book.getTitle().toLowerCase().contains(key.toLowerCase())) {
+                output.add(book.getBookId());
+            }
+            if (book.getAuthor().toLowerCase().contains(key.toLowerCase())) {
+                output.add(book.getBookId());
+            }
+            if (book.getPublisher().toLowerCase().contains(key.toLowerCase())) {
+                output.add(book.getBookId());
             }
 
         }
         for (Thesis thesis : theses.values()) {
-            if (countDocs(thesis.getThesisID()) == 0) {
 
-                if (thesis.getTitle().toLowerCase().contains(key.toLowerCase())) {
-                    output.add(thesis.getThesisID());
-                }
-                if (thesis.getStudentName().toLowerCase().contains(key.toLowerCase())) {
-                    output.add(thesis.getThesisID());
-                }
-                if (thesis.getProfessorName().toLowerCase().contains(key.toLowerCase())) {
-                    output.add(thesis.getThesisID());
-                }
+            if (thesis.getTitle().toLowerCase().contains(key.toLowerCase())) {
+                output.add(thesis.getThesisID());
             }
+            if (thesis.getStudentName().toLowerCase().contains(key.toLowerCase())) {
+                output.add(thesis.getThesisID());
+            }
+            if (thesis.getProfessorName().toLowerCase().contains(key.toLowerCase())) {
+                output.add(thesis.getThesisID());
+            }
+
         }
         return output;
     }
@@ -355,7 +352,7 @@ public class Library {
                     borrowedThesisNum++;
             }
         }
-        return (allBookNum - borrowedBoolNum) + " " + (allThesisNum - borrowedThesisNum) + " " + borrowedBoolNum + " "
+        return allBookNum + " " + allThesisNum + " " + borrowedBoolNum + " "
                 + borrowedThesisNum;
     }
 

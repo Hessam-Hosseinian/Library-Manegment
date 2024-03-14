@@ -1,12 +1,26 @@
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class CommandOperation {
-    private Manegment manegment;
+
+    private final HashMap<String, Library> libraries;
+    private final HashMap<String, Category> categories;
+    private final HashMap<String, Student> students;
+    private final HashMap<String, Staff> staffs;
 
     public CommandOperation() {
-        this.manegment = new Manegment();
+        libraries = new HashMap<>();
+        categories = new HashMap<>();
+        students = new HashMap<>();
+        staffs = new HashMap<>();
+        categories.put("null", new Category("null", "null"));
+        categories.put("-", new Category("-", "-"));
+
     }
 
     public void input(String input) throws ParseException {
@@ -139,8 +153,23 @@ public class CommandOperation {
     public void addLibrary(String libraryId, String libraryName, String foundationYear, int deskNumber,
             String address) {
         Library library = new Library(libraryId, libraryName, foundationYear, deskNumber, address);
-        System.out.println(manegment.addLibrary(library));
+        System.out.println(addLibrary2(library));
 
+    }
+
+    /**
+     * Adds a new Library object to libraries, if its ID is unique.
+     * 
+     * @param library the library that we want to add
+     * @return "success" if the library is successfully added,
+     *         or "duplicate-id" if a library with the same ID already exists.
+     */
+    public String addLibrary2(Library library) {
+        if (libraries.get(library.getLibraryId()) != null) {
+            return "duplicate-id";
+        }
+        libraries.put(library.getLibraryId(), library);
+        return "success";
     }
 
     // !----------------------------------------------------------------- CATEGORY
@@ -152,7 +181,22 @@ public class CommandOperation {
      */
     public void addCategory(String categoryId, String categoryName) {
         Category category = new Category(categoryId, categoryName);
-        System.out.println(manegment.addCategory(category));
+        System.out.println(addCategory(category));
+    }
+
+    /**
+     * Adds a new Category object to categories, if its ID is unique.
+     * 
+     * @param category the category that we want to add
+     * @return "success" if the category is successfully added,
+     *         or "duplicate-id" if a category with the same ID already exists.
+     */
+    public String addCategory(Category category) {
+        if (categories.get(category.getCategoryId()) != null) {
+            return "duplicate-id";
+        }
+        categories.put(category.getCategoryId(), category);
+        return "success";
     }
 
     // !----------------------------------------------------------------- BOOK
@@ -174,7 +218,7 @@ public class CommandOperation {
             String categoryId, String libraryId) {
         Book book = new Book(id, name, authorName, publisher, year, numBook,
                 categoryId, libraryId);
-        System.out.println(manegment.addBook(book));
+        System.out.println(addBook2(book));
     }
 
     /**
@@ -197,7 +241,7 @@ public class CommandOperation {
         Book book = new Book(id, name, authorName, publisher, year, numBook,
                 categoryId, libraryId);
 
-        System.out.println(manegment.editBook(book));
+        System.out.println(editBook2(book));
     }
 
     /**
@@ -208,7 +252,88 @@ public class CommandOperation {
      *                  to be removed.
      */
     public void removeBook(String bookId, String libraryId) {
-        System.out.println(manegment.removeBook(bookId, libraryId));
+        System.out.println(removeBook2(bookId, libraryId));
+    }
+
+    /**
+     * Adds a new Book object to the library's collection of books.
+     * 
+     * @param book The Book object to be added.
+     * @return "success" if successfully added,
+     *         "not-found" if the library or category is not found,
+     *         "duplicate-id" if a book with the same ID already exists in the
+     *         library.
+     */
+    public String addBook2(Book book) {
+        Library library = libraries.get(book.getLibraryId());
+        if (library == null) {
+
+            return "not-found";
+        }
+        Category category = categories.get(book.getCategoryId());
+        if (category == null) {
+
+            return "not-found";
+        }
+        if (library.getBook(book.getBookId()) != null) {
+            return "duplicate-id";
+        }
+        library.addBook(book);
+        return "success";
+    }
+
+    /**
+     * Edits an existing Book object in the library's books.
+     * 
+     * @param book The Book that we want to edit.
+     * @return "success" if the book is successfully edited,
+     *         "not-found" if the library, category, or book is not found.
+     */
+    public String editBook2(Book book) {
+        Library library = libraries.get(book.getLibraryId());
+        if (library == null) {
+
+            return "not-found";
+        }
+        Category category = categories.get(book.getCategoryId());
+        if (category == null) {
+
+            return "not-found";
+        }
+        Book book1 = library.getBook(book.getBookId());
+        if (book1 == null) {
+
+            return "not-found";
+        }
+        book1.edit(book);
+        return "success";
+    }
+
+    /**
+     * Removes a book from the library's collection.
+     *
+     * @param bookId    The unique identifier of the book to be removed.
+     * @param libraryId The unique identifier of the library from which the book
+     *                  should be removed.
+     * 
+     * @return "success" if the book is successfully removed, "not-found" if the
+     *         library or book is not found,
+     *         "not-allowed" if the book is currently borrowed and cannot be
+     *         removed.
+     */
+    public String removeBook2(String bookId, String libraryId) {
+        Library library = libraries.get(libraryId);
+        if (library == null) {
+            return "not-found";
+        }
+        if (library.countDocs(bookId) != 0) {
+            return "not-allowed";
+        }
+        if (library.getBook(bookId) == null) {
+            return "not-found";
+        }
+        library.removeBook(bookId);
+        return "success";
     }
 
     // !----------------------------------------------------------------- THESIS
@@ -229,7 +354,7 @@ public class CommandOperation {
             String libraryId) {
         Thesis thesis = new Thesis(id, name, studentName, advisor, year, categoryId,
                 libraryId);
-        System.out.println(manegment.addThesis(thesis));
+        System.out.println(addThesis2(thesis));
     }
 
     /**
@@ -249,7 +374,7 @@ public class CommandOperation {
             String categoryID) {
         Thesis thesis = new Thesis(id, name, studentName, advisor, year, categoryID,
                 libraryId);
-        System.out.println((manegment.editThesis(thesis)));
+        System.out.println((editThesis2(thesis)));
     }
 
     /**
@@ -260,7 +385,82 @@ public class CommandOperation {
      *                  is to be removed.
      */
     public void removeThesis(String thesisId, String libraryId) {
-        System.out.println(manegment.removeThesis(thesisId, libraryId));
+        System.out.println(removeThesis2(thesisId, libraryId));
+    }
+
+    /**
+     * Adds a new Thesis object to the library's collection of theses.
+     * 
+     * @param thesis The Thesis object to be added.
+     * @return "success" if the thesis is successfully added.
+     *         "not-found" if the library or category is not found
+     *         "duplicate-id" if a thesis with the same ID already exists in the
+     *         library.
+     */
+    public String addThesis2(Thesis thesis) {
+        Library library = libraries.get(thesis.getLibraryId());
+        if (library == null) {
+            return "not-found";
+        }
+        Category category = categories.get(thesis.getCategoryId());
+        if (category == null) {
+            return "not-found";
+        }
+        if (library.getThesis(thesis.getThesisID()) != null) {
+            return "duplicate-id";
+        }
+        library.addThesis(thesis);
+        return "success";
+    }
+
+    /**
+     * Edits an existing Thesis object in the library's collection of theses.
+     * 
+     * @param thesis The Thesis object containing the updated information.
+     * @return "success" if the thesis is successfully edited
+     *         "not-found" if the library, category, or thesis is not found.
+     */
+    public String editThesis2(Thesis thesis) {
+        Library library = libraries.get(thesis.getLibraryId());
+        if (library == null) {
+            return "not-found";
+        }
+        Category category = categories.get(thesis.getCategoryId());
+        if (category == null) {
+            return "not-found";
+        }
+        Thesis thesis1 = library.getThesis(thesis.getThesisID());
+        if (thesis1 == null) {
+            return "not-found";
+        }
+        thesis1.edit(thesis);
+        return "success";
+    }
+
+    /**
+     * Removes a thesis from the library's collection.
+     *
+     * @param thesisId  The unique identifier of the thesis to be removed.
+     * @param libraryId The unique identifier of the library from which the thesis
+     *                  should be removed.
+     * @return "success" if the thesis is successfully removed
+     *         "not-found" if the library or thesis is not found,
+     *         "not-allowed" if the thesis is currently borrowed and cannot be
+     *         removed.
+     */
+    public String removeThesis2(String thesisId, String libraryId) {
+        Library library = libraries.get(libraryId);
+        if (library == null) {
+            return "not-found";
+        }
+        if (library.countDocs(thesisId) != 0) {
+            return "not-allowed";
+        }
+        if (library.getThesis(thesisId) == null) {
+            return "not-found";
+        }
+        library.removeThesis(libraryId);
+        return "success";
     }
 
     // !----------------------------------------------------------------- STUDENT
@@ -281,7 +481,7 @@ public class CommandOperation {
             String address) {
         Student student = new Student(studentId, password, firstName, lastName, codeId,
                 birthday, address);
-        System.out.println(manegment.addStudent(student));
+        System.out.println(addStudent2(student));
     }
 
     /**
@@ -301,7 +501,7 @@ public class CommandOperation {
             String address) {
         Student student = new Student(studentId, password, firstName, lastName, codeId,
                 birthday, address);
-        System.out.println(manegment.editStudent(student));
+        System.out.println(editStudent2(student));
     }
 
     /**
@@ -311,7 +511,64 @@ public class CommandOperation {
      */
 
     public void removeStudent(String studentId) {
-        System.out.println(manegment.removeStudent(studentId));
+        System.out.println(removeStudent2(studentId));
+    }
+
+    /**
+     * Adds a new Student object to the collection of students.
+     * 
+     * @param student The Student object to be added.
+     * @return "success" if the student is successfully added
+     *         "duplicate-id" if a student with the same ID already exists.
+     */
+    public String addStudent2(Student student) {
+        if (students.get(student.getStudentId()) != null) {
+            return "duplicate-id";
+        }
+        students.put(student.getStudentId(), student);
+        return "success";
+    }
+
+    /**
+     * Edits an existing Student object in the collection of students.
+     * 
+     * @param student The Student object containing the updated information.
+     * @return "success" if the student is successfully edited
+     *         "not-found" if the student is not found.
+     */
+    public String editStudent2(Student student) {
+        Student student1 = students.get(student.getStudentId());
+        if (student1 == null) {
+            return "not-found";
+        }
+        student1.edit(student);
+        return "success";
+    }
+
+    /**
+     * Removes a student from the collection of students.
+     *
+     * @param studentId The unique identifier of the student to be removed.
+     * @return "success" if the student is successfully removed
+     *         "not-found" if the student is not found
+     *         "not-allowed" if the student is currently borrowing books or has
+     *         outstanding debt.
+     */
+    public String removeStudent2(String studentId) {
+        Student student = students.get(studentId);
+        if (student == null) {
+            return "not-found";
+        }
+        for (Library library : new ArrayList<>(libraries.values())) {
+            if (library.checkUserBorrows(studentId) != null) {
+                return "not-allowed";
+            }
+        }
+        if (student.getDebt() != 0) {
+            return "not-allowed";
+        }
+        students.remove(studentId);
+        return "success";
     }
 
     // !----------------------------------------------------------------- STAFF
@@ -331,7 +588,7 @@ public class CommandOperation {
             String address) {
         Staff staff = new Staff(StaffId, password, firstName, lastName, codeId, birthday,
                 address);
-        System.out.println(manegment.addStaff(staff));
+        System.out.println(addStaff2(staff));
     }
 
     /**
@@ -350,7 +607,7 @@ public class CommandOperation {
             String address) {
         Staff staff = new Staff(StaffId, password, firstName, lastName, codeId, birthday,
                 address);
-        System.out.println(manegment.editStaff(staff));
+        System.out.println(editStaff2(staff));
     }
 
     /**
@@ -359,7 +616,64 @@ public class CommandOperation {
      * @param staffId The unique identifier of the staff member to be removed.
      */
     public void removeStaff(String StaffId) {
-        System.out.println(manegment.removeStaff(StaffId));
+        System.out.println(removeStaff2(StaffId));
+    }
+
+    /**
+     * Adds a new Staff object to the collection of staff members.
+     * 
+     * @param staff The Staff object to be added.
+     * @return "success" if the staff member is successfully added
+     *         "duplicate-id" if a staff member with the same ID already exists.
+     */
+    public String addStaff2(Staff staff) {
+        if (staffs.get(staff.getStaffId()) != null) {
+            return "duplicate-id";
+        }
+        staffs.put(staff.getStaffId(), staff);
+        return "success";
+    }
+
+    /**
+     * Edits an existing Staff object in the collection of staff members.
+     * 
+     * @param staff The Staff object containing the updated information.
+     * @return "success" if the staff member is successfully edited
+     *         "not-found" if the staff member is not found.
+     */
+    public String editStaff2(Staff staff) {
+        Staff staff1 = staffs.get(staff.getStaffId());
+        if (staff1 == null) {
+            return "not-found";
+        }
+        staff1.edit(staff);
+        return "success";
+    }
+
+    /**
+     * Removes a staff member from the collection of staff members.
+     *
+     * @param staffId The unique identifier of the staff member to be removed.
+     * @return "success" if the staff member is successfully removed
+     *         "not-found" if the staff member is not found,
+     *         "not-allowed" if the staff member has outstanding debt or is
+     *         currently borrowing items.
+     */
+    public String removeStaff2(String staffId) {
+        Staff staff = staffs.get(staffId);
+        if (staff == null) {
+            return "not-found";
+        }
+        if (staff.getDebt() != 0) {
+            return "not-allowed";
+        }
+        for (Library library : new ArrayList<>(libraries.values())) {
+            if (library.checkUserBorrows(staffId) != null) {
+                return "not-allowed";
+            }
+        }
+        staffs.remove(staffId);
+        return "success";
     }
 
     // !----------------------------------------------------------------- BORROW
@@ -386,7 +700,7 @@ public class CommandOperation {
 
         Borrow borrow = new Borrow(date, userId, docId, libraryId);
 
-        System.out.println(manegment.borrow(borrow, password));
+        System.out.println(borrow2(borrow, password));
 
     }
 
@@ -410,7 +724,115 @@ public class CommandOperation {
 
         Date date = new Date(utilDate.getTime());
         Borrow borrow = new Borrow(date, userId, docId, libraryId);
-        System.out.println(manegment.returning(borrow, pass));
+        System.out.println(returning2(borrow, pass));
+    }
+
+    /**
+     * Handles the borrowing process for a user, checking user existence, password
+     * validation, document availability, and borrowing limits.
+     * 
+     * @param borrow   The Borrow object containing information about the borrowing
+     *                 request.
+     * @param password The password provided by the user for authentication.
+     * @return "success" if the borrowing process is successful, "not-found" if the
+     *         user or library is not found,
+     *         "invalid-pass" if the password provided is invalid
+     *         "not-allowed" if the borrowing is not allowed due to limits or
+     *         restrictions,
+     *         "not-found" if the requested document is not found in the library.
+     */
+    public String borrow2(Borrow borrow, String password) {
+        if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
+            return "not-found";
+        }
+        if (borrow.isStudent()) {
+            Student student = students.get(borrow.getUserId());
+            if (!student.getPassword().equals(password)) {
+                return "invalid-pass";
+            }
+        } else {
+            Staff staff = staffs.get(borrow.getUserId());
+            if (!staff.getPassword().equals(password)) {
+                return "invalid-pass";
+            }
+        }
+        Library library = libraries.get(borrow.getLibraryId());
+        if (library == null) {
+            return "not-found";
+        }
+        if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
+            return "not-found";
+        }
+        if (!library.borrow(borrow, countBorrow(borrow.getUserId()))) {
+            return "not-allowed";
+        }
+        return "success";
+    }
+
+    /**
+     * Counts the number of items borrowed by a user across all libraries.
+     * 
+     * @param userId The unique identifier of the user whose borrow count is to be
+     *               calculated.
+     * @return The total number of items borrowed by the user across all libraries.
+     */
+    public int countBorrow(String userId) {
+        int borrowed = 0;
+        for (Library library : libraries.values()) {
+            borrowed += library.countBorrows(userId);
+        }
+        return borrowed;
+    }
+
+    /**
+     * Handles the returning process for a user, checking user existence, password
+     * validation, document availability, and returning conditions.
+     * 
+     * @param borrow The Borrow object containing information about the returning
+     *               request.
+     * @param pass   The password provided by the user for authentication.
+     * @return "success" if the returning process is successful
+     *         "not-found" if the user, library, or borrow record is not found,
+     *         "invalid-pass" if the password provided is invalid, or a String
+     *         representation of the debt incurred if any.
+     */
+    public String returning2(Borrow borrow, String pass) {
+        if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
+            return "not-found";
+        }
+        if (borrow.isStudent()) {
+            Student student = students.get(borrow.getUserId());
+            if (!student.getPassword().equals(pass)) {
+                return "invalid-pass";
+            }
+
+        } else {
+            Staff staff = staffs.get(borrow.getUserId());
+            if (!staff.getPassword().equals(pass)) {
+                return "invalid-pass";
+            }
+        }
+        Library library = libraries.get(borrow.getLibraryId());
+        if (library == null) {
+            return "not-found";
+        }
+        if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
+            return "not-found";
+        }
+        Borrow borrowHelp = library.checkUserBorrows(borrow.getUserId(), borrow.getStuffId());
+        if (borrowHelp == null) {
+            return "not-found";
+        }
+        int debt = library.returning(borrowHelp, borrow.getDate());
+        if (debt == 0) {
+            return "success";
+        }
+        if (borrow.isStudent()) {
+            students.get(borrow.getUserId()).setDebt(debt);
+            return "" + debt;
+        }
+        staffs.get(borrow.getUserId()).setDebt(debt);
+        return "" + debt;
     }
 
     // !----------------------------------------------------------------- SEARCH
@@ -421,7 +843,7 @@ public class CommandOperation {
      * @param key The keyword to search for.
      */
     public void search(String key) {
-        System.out.println(manegment.search(key));
+        System.out.println(search2(key));
     }
 
     /**
@@ -434,7 +856,109 @@ public class CommandOperation {
      */
     public void searchUser(String userId, String pass, String key) {
 
-        System.out.println(manegment.searchUser(userId, pass, key));
+        System.out.println(searchUser2(userId, pass, key));
+    }
+
+    /**
+     * Searches for the given key across all libraries and generates a sorted list
+     * of search results.
+     * 
+     * @param key The search key to look for in the libraries.
+     * @return A StringBuilder containing the sorted search results separated by "|"
+     *         characters, or "not-found" if no results are found.
+     */
+    public StringBuilder search2(String key) {
+        HashSet<String> output = new HashSet<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Library library : libraries.values()) {
+            output.addAll(library.search(key));
+        }
+        ArrayList<String> hold = new ArrayList<>(output);
+        Collections.sort(hold);
+        for (String str : hold) {
+            stringBuilder.append(str);
+            stringBuilder.append("|");
+        }
+        if (stringBuilder.length() == 0) {
+            return stringBuilder.append("not-found");
+        }
+        stringBuilder = stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        return stringBuilder;
+    }
+
+    /**
+     * Searches for the given key across all libraries and generates a sorted list
+     * of search results, after authenticating the user.
+     * 
+     * @param userId The unique identifier of the user.
+     * @param pass   The password provided by the user for authentication.
+     * @param key    The search key to look for in the libraries.
+     * @return A StringBuilder containing the sorted search results separated by "|"
+     *         characters, or "not-found" if the user is not found,
+     *         "invalid-pass" if the password provided is invalid.
+     */
+    public StringBuilder searchUser2(String userId, String pass, String key) {
+
+        Student student = students.get(userId);
+        Staff staff = staffs.get(userId);
+
+        if (staff == null && student == null) {
+            return new StringBuilder("not-found");
+
+        } else if (staff == null) {
+
+            if (!student.getPassword().equals(pass)) {
+
+                return new StringBuilder("invalid-pass");
+            }
+        } else if (student == null) {
+
+            if (!staff.getPassword().equals(pass)) {
+                return new StringBuilder("invalid-pass");
+            }
+        }
+
+        return searchUser3(key);
+    }
+
+    /**
+     * Searches for the given key among students' and staff members' first and last
+     * names, and generates a sorted list of matching user IDs.
+     * 
+     * @param key The search key to look for in the user names.
+     * @return A StringBuilder containing the sorted list of user IDs separated by
+     *         "|" characters, or "not-found" if no matching users are found.
+     */
+    private StringBuilder searchUser3(String key) {
+        HashSet<String> output = new HashSet<>();
+        StringBuilder searchID = new StringBuilder();
+        for (Student student : students.values()) {
+            if (student.getFirstName().toLowerCase().contains(key.toLowerCase())) {
+                output.add(student.getStudentId());
+            }
+            if (student.getLastName().toLowerCase().contains(key.toLowerCase())) {
+                output.add(student.getStudentId());
+            }
+        }
+        for (Staff staff : staffs.values()) {
+            if (staff.getFirstName().toLowerCase().contains(key.toLowerCase())) {
+                output.add(staff.getStaffId());
+            }
+            if (staff.getLastName().toLowerCase().contains(key.toLowerCase())) {
+                output.add(staff.getStaffId());
+            }
+        }
+        ArrayList<String> outputArray = new ArrayList<>(output);
+        Collections.sort(outputArray);
+        for (String i : outputArray) {
+            searchID.append(i);
+            searchID.append("|");
+        }
+        if (searchID.length() == 0) {
+            return new StringBuilder("not-found");
+        }
+        searchID = searchID.deleteCharAt(searchID.length() - 1);
+        return searchID;
     }
 
     // !----------------------------------------------------------------- REPORT
@@ -444,11 +968,11 @@ public class CommandOperation {
      * The penalties include any outstanding debts owed by both staff and students.
      */
     public void reportPenalties() {
-        System.out.println(manegment.reportPenalties());
+        System.out.println(reportPenalties2());
     }
 
     public void categoryReport(String categoryId) {
-        System.out.println(manegment.categoryReport(categoryId));
+        System.out.println(categoryReport2(categoryId));
     }
 
     /**
@@ -458,7 +982,7 @@ public class CommandOperation {
      *                  generated.
      */
     public void libraryReport(String libraryId) {
-        System.out.println(manegment.libraryReport(libraryId));
+        System.out.println(libraryReport2(libraryId));
     }
 
     /**
@@ -477,6 +1001,98 @@ public class CommandOperation {
         java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
 
         Date date = new Date(utilDate.getTime());
-        System.out.println(manegment.reportPasseDeadline(libraryId, date));
+        System.out.println(reportPasseDeadline2(libraryId, date));
     }
+
+    /**
+     * Generates a report of the total penalties accrued by both staff and students.
+     * 
+     * @return A String representation of the total penalties accrued by staff and
+     *         students.
+     */
+    public String reportPenalties2() {
+        int Penalties = 0;
+        for (Staff staff : staffs.values()) {
+            Penalties += staff.getDebt();
+        }
+        for (Student student : students.values()) {
+            Penalties += student.getDebt();
+        }
+        return "" + Penalties;
+    }
+
+    /**
+     * Generates a report for the specified category, showing the number of books
+     * and theses in that category.
+     * 
+     * @param categoryId The unique identifier of the category for which the report
+     *                   is requested.
+     * @return A String representation of the report for the specified category, or
+     *         "not-found" if the category is not found.
+     */
+    public String categoryReport2(String categoryId) {
+        Category category = categories.get(categoryId);
+        if (category == null) {
+            return "not-found";
+        }
+
+        int booksCount = 0;
+        int thesesCount = 0;
+        // int booksBorrowedCount = 0;
+        // int thesesBorrowedCount = 0;
+
+        // Iterate over all libraries to count books and theses in the specified
+        // category
+        for (Library library : libraries.values()) {
+            booksCount += library.countBooksInCategory(categoryId);
+            // booksBorrowedCount += library.countBorrowedBooksInCategory(categoryId);
+            thesesCount += library.countThesesInCategory(categoryId);
+            // thesesBorrowedCount = +library.countBorrowedThesesInCategory(categoryId);
+        }
+
+        return booksCount + " " + thesesCount;
+    }
+
+    /**
+     * Generates a report for the specified library.
+     * 
+     * @param libraryId The unique identifier of the library for which the report is
+     *                  requested.
+     * @return A String representation of the report for the specified library, or
+     *         "not-found" if the library is not found.
+     */
+    public String libraryReport2(String libraryId) {
+        Library library = libraries.get(libraryId);
+        if (library == null) {
+            return "not-found";
+        }
+        return library.libraryReport();
+    }
+
+    /**
+     * Generates a report of items that have passed their deadline in the specified
+     * library as of the given date.
+     * 
+     * @param libraryId The unique identifier of the library for which the report is
+     *                  requested.
+     * @param date      The date for which the report is generated.
+     * @return A StringBuilder containing the report of items that have passed their
+     *         deadline in the specified library as of the given date,
+     *         or "not-found" if the library is not found, or "none" if no items
+     *         have passed their deadline.
+     */
+    public StringBuilder reportPasseDeadline2(String libraryId, Date date) {
+        StringBuilder output;
+        Library library = libraries.get(libraryId);
+        if (library == null) {
+            return new StringBuilder("not-found");
+        }
+        output = library.reportPassedDeadline(date);
+        if (output.length() == 0) {
+            return new StringBuilder("none");
+        }
+        output = output.deleteCharAt(output.length() - 1);
+        return output;
+    }
+
 }

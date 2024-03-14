@@ -577,19 +577,19 @@ public class Manegment {
 
         int booksCount = 0;
         int thesesCount = 0;
-        int booksBorrowedCount = 0;
-        int thesesBorrowedCount = 0;
+        // int booksBorrowedCount = 0;
+        // int thesesBorrowedCount = 0;
 
         // Iterate over all libraries to count books and theses in the specified
         // category
         for (Library library : libraries.values()) {
             booksCount += library.countBooksInCategory(categoryId);
-            booksBorrowedCount += library.countBorrowedBooksInCategory(categoryId);
+            // booksBorrowedCount += library.countBorrowedBooksInCategory(categoryId);
             thesesCount += library.countThesesInCategory(categoryId);
-            thesesBorrowedCount = +library.countBorrowedThesesInCategory(categoryId);
+            // thesesBorrowedCount = +library.countBorrowedThesesInCategory(categoryId);
         }
 
-        return (booksCount - booksBorrowedCount) + " " + (thesesCount - thesesBorrowedCount);
+        return booksCount + " " + thesesCount;
     }
 
     /**
