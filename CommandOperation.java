@@ -94,6 +94,10 @@ public class CommandOperation {
         }
 
         // !----------------------------------------------------------------- SEARCH
+        else if (input.contains("search-user")) {
+
+            searchUser(args[0], args[1], args[2]);
+        }
 
         else if (input.contains("search")) {
 
@@ -101,10 +105,6 @@ public class CommandOperation {
 
         }
 
-        else if (input.contains("search-user")) {
-
-            searchUser(args[0], args[1], args[2]);
-        }
         // !----------------------------------------------------------------- REPORT
 
         else if (input.contains("report-penalties-sum")) {
@@ -370,21 +370,21 @@ public class CommandOperation {
      * @param password  The password of the user borrowing the item.
      * @param libraryId The unique identifier of the library from which the item is
      *                  being borrowed.
-     * @param stuffId   The unique identifier of the item being borrowed.
+     * @param docId     The unique identifier of the item being borrowed.
      * @param strDate   The date in string format (yyyy-MM-dd) when the item is
      *                  being borrowed.
      * @param hour      The hour in string format (HH:mm) when the item is being
      *                  borrowed.
      * @throws ParseException If the parsing of the date and hour strings fails.
      */
-    public void borrow(String userId, String password, String libraryId, String stuffId, String strDate, String hour)
+    public void borrow(String userId, String password, String libraryId, String docId, String strDate, String hour)
             throws ParseException {
 
         java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
 
         Date date = new Date(utilDate.getTime());
 
-        Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
+        Borrow borrow = new Borrow(date, userId, docId, libraryId);
 
         System.out.println(manegment.borrow(borrow, password));
 
@@ -397,19 +397,19 @@ public class CommandOperation {
      * @param pass      The password of the user returning the item.
      * @param libraryId The unique identifier of the library to which the item is
      *                  being returned.
-     * @param stuffId   The unique identifier of the item being returned.
+     * @param docId     The unique identifier of the item being returned.
      * @param strDate   The date in string format (yyyy-MM-dd) when the item is
      *                  being returned.
      * @param hour      The hour in string format (HH:mm) when the item is being
      *                  returned.
      * @throws ParseException If the parsing of the date and hour strings fails.
      */
-    public void returning(String userId, String pass, String libraryId, String stuffId, String strDate, String hour)
+    public void returning(String userId, String pass, String libraryId, String docId, String strDate, String hour)
             throws ParseException {
         java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
 
         Date date = new Date(utilDate.getTime());
-        Borrow borrow = new Borrow(date, userId, stuffId, libraryId);
+        Borrow borrow = new Borrow(date, userId, docId, libraryId);
         System.out.println(manegment.returning(borrow, pass));
     }
 

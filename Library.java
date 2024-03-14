@@ -205,28 +205,69 @@ public class Library {
         return debt;
     }
 
+    public int countBorrowedBooksById(String bookId) {
+        int count = 0;
+
+        if (books.containsKey(bookId)) {
+
+            for (ArrayList<Borrow> borrowsList : borrows.values()) {
+                for (Borrow borrow : borrowsList) {
+
+                    if (borrow.isBook() && borrow.getStuffId().equals(bookId)) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    public int countBorrowedThesesById(String thesisId) {
+        int count = 0;
+
+        if (books.containsKey(thesisId)) {
+
+            for (ArrayList<Borrow> borrowsList : borrows.values()) {
+                for (Borrow borrow : borrowsList) {
+
+                    if (!borrow.isBook() && borrow.getStuffId().equals(thesisId)) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
     public HashSet<String> search(String key) {
         HashSet<String> output = new HashSet<>();
         for (Book book : books.values()) {
-            if (book.getTitle().toLowerCase().contains(key.toLowerCase())) {
-                output.add(book.getBookId());
+            if (book.getCopyNumber() - countBorrowedBooksById(book.getBookId()) != 0) {
+
+                if (book.getTitle().toLowerCase().contains(key.toLowerCase())) {
+                    output.add(book.getBookId());
+                }
+                if (book.getAuthor().toLowerCase().contains(key.toLowerCase())) {
+                    output.add(book.getBookId());
+                }
+                if (book.getPublisher().toLowerCase().contains(key.toLowerCase())) {
+                    output.add(book.getBookId());
+                }
             }
-            if (book.getAuthor().toLowerCase().contains(key.toLowerCase())) {
-                output.add(book.getBookId());
-            }
-            if (book.getPublisher().toLowerCase().contains(key.toLowerCase())) {
-                output.add(book.getBookId());
-            }
+
         }
         for (Thesis thesis : theses.values()) {
-            if (thesis.getTitle().toLowerCase().contains(key.toLowerCase())) {
-                output.add(thesis.getThesisID());
-            }
-            if (thesis.getStudentName().toLowerCase().contains(key.toLowerCase())) {
-                output.add(thesis.getThesisID());
-            }
-            if (thesis.getProfessorName().toLowerCase().contains(key.toLowerCase())) {
-                output.add(thesis.getThesisID());
+            if (countDocs(thesis.getThesisID()) == 0) {
+
+                if (thesis.getTitle().toLowerCase().contains(key.toLowerCase())) {
+                    output.add(thesis.getThesisID());
+                }
+                if (thesis.getStudentName().toLowerCase().contains(key.toLowerCase())) {
+                    output.add(thesis.getThesisID());
+                }
+                if (thesis.getProfessorName().toLowerCase().contains(key.toLowerCase())) {
+                    output.add(thesis.getThesisID());
+                }
             }
         }
         return output;
@@ -264,6 +305,40 @@ public class Library {
         return count;
     }
 
+    public int countBorrowedBooksInCategory(String categoryId) {
+        int count = 0;
+
+        for (ArrayList<Borrow> borrowsList : borrows.values()) {
+            for (Borrow borrow : borrowsList) {
+
+                if (borrow.isBook() && books.containsKey(borrow.getStuffId())) {
+                    Book borrowedBook = books.get(borrow.getStuffId());
+                    if (borrowedBook.getCategoryId().equals(categoryId)) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    public int countBorrowedThesesInCategory(String categoryId) {
+        int count = 0;
+
+        for (ArrayList<Borrow> borrowsList : borrows.values()) {
+            for (Borrow borrow : borrowsList) {
+
+                if (!borrow.isBook() && theses.containsKey(borrow.getStuffId())) {
+                    Thesis borrowedThesis = theses.get(borrow.getStuffId());
+                    if (borrowedThesis.getCategoryId().equals(categoryId)) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
     public String libraryReport() {
         int allBookNum = 0;
         int allThesisNum = theses.size();
@@ -280,7 +355,8 @@ public class Library {
                     borrowedThesisNum++;
             }
         }
-        return allBookNum + " " + allThesisNum + " " + borrowedBoolNum + " " + borrowedThesisNum;
+        return (allBookNum - borrowedBoolNum) + " " + (allThesisNum - borrowedThesisNum) + " " + borrowedBoolNum + " "
+                + borrowedThesisNum;
     }
 
     public StringBuilder reportPassedDeadline(Date date) {

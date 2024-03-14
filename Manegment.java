@@ -68,10 +68,12 @@ public class Manegment {
     public String addBook(Book book) {
         Library library = libraries.get(book.getLibraryId());
         if (library == null) {
+
             return "not-found";
         }
         Category category = categories.get(book.getCategoryId());
         if (category == null) {
+
             return "not-found";
         }
         if (library.getBook(book.getBookId()) != null) {
@@ -461,7 +463,7 @@ public class Manegment {
         if (stringBuilder.length() == 0) {
             return stringBuilder.append("not-found");
         }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        stringBuilder = stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return stringBuilder;
     }
 
@@ -482,7 +484,6 @@ public class Manegment {
         Staff staff = staffs.get(userId);
 
         if (staff == null && student == null) {
-
             return new StringBuilder("not-found");
 
         } else if (staff == null) {
@@ -537,7 +538,7 @@ public class Manegment {
         if (searchID.length() == 0) {
             return new StringBuilder("not-found");
         }
-        searchID.deleteCharAt(searchID.length() - 1);
+        searchID = searchID.deleteCharAt(searchID.length() - 1);
         return searchID;
     }
 
@@ -576,15 +577,19 @@ public class Manegment {
 
         int booksCount = 0;
         int thesesCount = 0;
+        int booksBorrowedCount = 0;
+        int thesesBorrowedCount = 0;
 
         // Iterate over all libraries to count books and theses in the specified
         // category
         for (Library library : libraries.values()) {
             booksCount += library.countBooksInCategory(categoryId);
+            booksBorrowedCount += library.countBorrowedBooksInCategory(categoryId);
             thesesCount += library.countThesesInCategory(categoryId);
+            thesesBorrowedCount = +library.countBorrowedThesesInCategory(categoryId);
         }
 
-        return booksCount + " " + thesesCount;
+        return (booksCount - booksBorrowedCount) + " " + (thesesCount - thesesBorrowedCount);
     }
 
     /**
@@ -625,7 +630,7 @@ public class Manegment {
         if (output.length() == 0) {
             return new StringBuilder("none");
         }
-        output.deleteCharAt(output.length() - 1);
+        output = output.deleteCharAt(output.length() - 1);
         return output;
     }
 
