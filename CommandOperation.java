@@ -136,9 +136,20 @@ public class CommandOperation {
         else if (input.contains("report-passed-deadline")) {
             reportPasseDeadline(args[0], args[1], args[2]);
         }
+        // !----------------------------------------------------------------- RESERVE
+        else if (input.contains("reserve-seat")) {
+            reserveseat(args[0], args[1], args[2], args[3], args[4], args[5]);
+        }
 
     }
 
+    // ? ----------------------------------------------------------------------
+    // ? ----------------------------------------------------------------------
+    // ? ----------------------------------------------------------------------
+    // ? ----------------------------------------------------------------------
+    // ? ----------------------------------------------------------------------
+    // ? ----------------------------------------------------------------------
+    // ? ----------------------------------------------------------------------
     // ? ----------------------------------------------------------------------
     // !----------------------------------------------------------------- LIBRARY
     /**
@@ -697,6 +708,7 @@ public class CommandOperation {
         java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
 
         Date date = new Date(utilDate.getTime());
+        // System.out.println(date);
 
         Borrow borrow = new Borrow(date, userId, docId, libraryId);
 
@@ -743,28 +755,28 @@ public class CommandOperation {
      */
     public String borrow2(Borrow borrow, String password) {
         if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
-            return "not-found";
+            return "not-found"; // user not-found
         }
         if (borrow.isStudent()) {
             Student student = students.get(borrow.getUserId());
             if (!student.getPassword().equals(password)) {
-                return "invalid-pass";
+                return "invalid-pass";// user is student and its pass is wrong
             }
         } else {
             Staff staff = staffs.get(borrow.getUserId());
             if (!staff.getPassword().equals(password)) {
-                return "invalid-pass";
+                return "invalid-pass";// user is staff and its pass is wrong
             }
         }
         Library library = libraries.get(borrow.getLibraryId());
         if (library == null) {
-            return "not-found";
+            return "not-found"; // library not-found
         }
         if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
-            return "not-found";
+            return "not-found"; // there is no book or thesis whit this ID
         }
         if (!library.borrow(borrow, countBorrow(borrow.getUserId()))) {
-            return "not-allowed";
+            return "not-allowed"; // the user can not borrow more doc
         }
         return "success";
     }
@@ -798,32 +810,32 @@ public class CommandOperation {
      */
     public String returning2(Borrow borrow, String pass) {
         if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
-            return "not-found";
+            return "not-found"; // user not-found
         }
         if (borrow.isStudent()) {
             Student student = students.get(borrow.getUserId());
             if (!student.getPassword().equals(pass)) {
-                return "invalid-pass";
+                return "invalid-pass";// user is student and its pass is wrong
             }
 
         } else {
             Staff staff = staffs.get(borrow.getUserId());
             if (!staff.getPassword().equals(pass)) {
-                return "invalid-pass";
+                return "invalid-pass";// user is staff and its pass is wrong
             }
         }
         Library library = libraries.get(borrow.getLibraryId());
         if (library == null) {
-            return "not-found";
+            return "not-found";// library not-found
         }
         if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
-            return "not-found";
+            return "not-found";// there is no book or thesis whit this ID
         }
         Borrow borrowHelp = library.checkUserBorrows(borrow.getUserId(), borrow.getStuffId());
         if (borrowHelp == null) {
-            return "not-found";
+            return "not-found"; // there is no borrow that we want to return it
         }
-        int debt = library.returning(borrowHelp, borrow.getDate());
+        int debt = library.returning(borrowHelp, borrow.getDate()); // calculate the debt
         if (debt == 0) {
             return "success";
         }
@@ -1093,6 +1105,62 @@ public class CommandOperation {
         }
         output = output.deleteCharAt(output.length() - 1);
         return output;
+    }
+
+    // !----------------------------------------------------------------- RESERVE
+    public void reserveseat(String userId, String password, String libraryId, String strDate, String startedHour,
+            String endedHour)
+            throws ParseException {
+
+        java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd").parse(strDate);
+
+        Date startedDate = new Date(utilDate.getTime());
+
+        Reserve reserve = new Reserve(libraryId, startedDate, startedHour, endedHour, userId);
+
+        System.out.println(reserveseat2(reserve, password));
+
+    }
+
+    public String reserveseat2(Reserve reserve, String password) {
+
+        if (!reserve.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
+            return "not-found"; // user not-found
+        }
+        if (reserve.isStudent()) {
+            Student student = students.get(reserve.getUserId());
+            if (!student.getPassword().equals(password)) {
+                return "invalid-pass";// user is student and its pass is wrong
+            }
+        } else {
+            Staff staff = staffs.get(reserve.getUserId());
+            if (!staff.getPassword().equals(password)) {
+                return "invalid-pass";// user is staff and its pass is wrong
+            }
+        }
+        Library library = libraries.get(reserve.getLibraryId());
+        if (library == null) {
+            return "not-found"; // library not-found
+        }
+
+        if (reserve.counthours()) {
+
+            return "not-alowed";
+        }
+
+        for (Library library11 : libraries.values()) {
+            if (library11.checkResereve(reserve.getUserId(), reserve)) {
+
+                return "not-allowed";
+            }
+        }
+        if (library.countReserves(reserve) >= library.getDeskNumber()) {
+            return "not-available";
+
+        }
+        library.addReserve2(reserve);
+        return "success";
+
     }
 
 }

@@ -2,6 +2,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 public class Borrow {
+
     private Date date;
 
     private String userId;
@@ -38,7 +39,7 @@ public class Borrow {
         }
         return false;
     }
-
+ 
     public Date getDate() {
         return date;
     }
