@@ -10,6 +10,12 @@ public class Main {
         CommandOperation commandOperation = new CommandOperation();
         while (!input.equals("finish")) {
             input = scanner.nextLine();
+            if (input.equals("res")) {
+
+                commandOperation.res();
+
+            }
+
             commandOperation.input(input);
         }
 

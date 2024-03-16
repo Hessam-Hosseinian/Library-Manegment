@@ -15,7 +15,7 @@ public class Library {
     private final HashMap<String, Book> books;
     private final HashMap<String, Thesis> theses;
     private final HashMap<String, ArrayList<Borrow>> borrows;
-    private final HashMap<String, Reserve> reservs;
+    // private final HashMap<String, Reserve> reservs;
 
     public Library(String libraryId, String libraryName, String foundationYear, int deskNumber, String address) {
         this.libraryId = libraryId;
@@ -26,7 +26,7 @@ public class Library {
         this.books = new HashMap<>();
         this.theses = new HashMap<>();
         this.borrows = new HashMap<>();
-        this.reservs = new HashMap<>();
+        // this.reservs = new HashMap<>();
     }
 
     /**
@@ -73,41 +73,12 @@ public class Library {
         return count;
     }
 
-    public boolean checkResereve(String userId, Reserve curReserve) {
-
-        for (Reserve reserve : reservs.values()) {
-            if (reserve.getUserId().equals(userId) && reserve.getDate() == curReserve.getDate()) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    public int countReserves(Reserve curReserve) {
-        int count = 0;
-
-        for (Reserve reserve : reservs.values()) {
-            if (reserve.getDate() == curReserve.getDate()) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
     public int countDocs(String docId) {
         ArrayList<Borrow> myBorrow = borrows.get(docId);
         if (myBorrow == null) {
             return 0;
         }
         return myBorrow.size();
-    }
-
-    public void addReserve2(Reserve reserve) {
-        reservs.put(reserve.getUserId(), reserve);
-
     }
 
     public boolean isAllowed(Borrow borrow) {

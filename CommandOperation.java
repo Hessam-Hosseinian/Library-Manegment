@@ -1,6 +1,7 @@
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,12 +13,14 @@ public class CommandOperation {
     private final HashMap<String, Category> categories;
     private final HashMap<String, Student> students;
     private final HashMap<String, Staff> staffs;
+    private final HashMap<String, Reserve> reserves;
 
     public CommandOperation() {
         libraries = new HashMap<>();
         categories = new HashMap<>();
         students = new HashMap<>();
         staffs = new HashMap<>();
+        reserves = new HashMap<>();
         categories.put("null", new Category("null", "null"));
         categories.put("-", new Category("-", "-"));
 
@@ -153,12 +156,12 @@ public class CommandOperation {
     // ? ----------------------------------------------------------------------
     // !----------------------------------------------------------------- LIBRARY
     /**
-     * Adds a new library to the management system with the provided details.
-     * 
-     * @param libraryId      The unique identifier of the library.
+     * Adds a new library to the system.
+     *
+     * @param libraryId      The unique identifier for the library.
      * @param libraryName    The name of the library.
      * @param foundationYear The year the library was founded.
-     * @param deskNumber     The number of desks in the library.
+     * @param deskNumber     The number of desks available in the library.
      * @param address        The address of the library.
      */
     public void addLibrary(String libraryId, String libraryName, String foundationYear, int deskNumber,
@@ -169,11 +172,12 @@ public class CommandOperation {
     }
 
     /**
-     * Adds a new Library object to libraries, if its ID is unique.
-     * 
-     * @param library the library that we want to add
-     * @return "success" if the library is successfully added,
-     *         or "duplicate-id" if a library with the same ID already exists.
+     * Adds a library to the system.
+     *
+     * @param library The Library object representing the library to be added.
+     * @return "duplicate-id" if a library with the same ID already exists in the
+     *         system.
+     *         "success" if the library is successfully added to the system.
      */
     public String addLibrary2(Library library) {
         if (libraries.get(library.getLibraryId()) != null) {
@@ -200,7 +204,7 @@ public class CommandOperation {
      * 
      * @param category the category that we want to add
      * @return "success" if the category is successfully added,
-     *         or "duplicate-id" if a category with the same ID already exists.
+     *         "duplicate-id" if a category with the same ID already exists.
      */
     public String addCategory(Category category) {
         if (categories.get(category.getCategoryId()) != null) {
@@ -708,7 +712,6 @@ public class CommandOperation {
         java.util.Date utilDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(strDate + " " + hour);
 
         Date date = new Date(utilDate.getTime());
-        // System.out.println(date);
 
         Borrow borrow = new Borrow(date, userId, docId, libraryId);
 
@@ -1050,16 +1053,12 @@ public class CommandOperation {
 
         int booksCount = 0;
         int thesesCount = 0;
-        // int booksBorrowedCount = 0;
-        // int thesesBorrowedCount = 0;
 
-        // Iterate over all libraries to count books and theses in the specified
-        // category
         for (Library library : libraries.values()) {
             booksCount += library.countBooksInCategory(categoryId);
-            // booksBorrowedCount += library.countBorrowedBooksInCategory(categoryId);
+
             thesesCount += library.countThesesInCategory(categoryId);
-            // thesesBorrowedCount = +library.countBorrowedThesesInCategory(categoryId);
+
         }
 
         return booksCount + " " + thesesCount;
@@ -1108,6 +1107,18 @@ public class CommandOperation {
     }
 
     // !----------------------------------------------------------------- RESERVE
+    /**
+     * Reserves a seat in a library for a user.
+     *
+     * @param userId      The unique identifier of the user making the reservation.
+     * @param password    The password associated with the user's account.
+     * @param libraryId   The unique identifier of the library where the seat is
+     *                    being reserved.
+     * @param strDate     The date of the reservation in the format "yyyy-MM-dd".
+     * @param startedHour The starting hour of the reservation.
+     * @param endedHour   The ending hour of the reservation.
+     * @throws ParseException If an error occurs while parsing the date string.
+     */
     public void reserveseat(String userId, String password, String libraryId, String strDate, String startedHour,
             String endedHour)
             throws ParseException {
@@ -1122,44 +1133,128 @@ public class CommandOperation {
 
     }
 
+    /**
+     * Attempts to reserve a seat based on the provided reservation details and
+     * password.
+     *
+     * @param reserve  The reservation object containing details of the reservation.
+     * @param password The password associated with the user's account.
+     * @return A string indicating the result of the reservation attempt:
+     *         - "not-found" if the user or library is not found.
+     *         - "invalid-pass" if the provided password is incorrect.
+     *         - "not-allowed" if the reservation is not allowed due to existing
+     *         reservations or exceeding time limits.
+     *         - "not-available" if all seats are already reserved.
+     *         - "success" if the reservation is successfully made.
+     */
     public String reserveseat2(Reserve reserve, String password) {
 
         if (!reserve.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
-            return "not-found"; // user not-found
+            return "not-found";
+        }
+        Library library = libraries.get(reserve.getLibraryId());
+        if (library == null) {
+            return "not-found";
         }
         if (reserve.isStudent()) {
             Student student = students.get(reserve.getUserId());
             if (!student.getPassword().equals(password)) {
-                return "invalid-pass";// user is student and its pass is wrong
+                return "invalid-pass";
             }
         } else {
             Staff staff = staffs.get(reserve.getUserId());
             if (!staff.getPassword().equals(password)) {
-                return "invalid-pass";// user is staff and its pass is wrong
+                return "invalid-pass";
             }
-        }
-        Library library = libraries.get(reserve.getLibraryId());
-        if (library == null) {
-            return "not-found"; // library not-found
         }
 
         if (reserve.counthours()) {
 
-            return "not-alowed";
+            return "not-allowed";
         }
 
-        for (Library library11 : libraries.values()) {
-            if (library11.checkResereve(reserve.getUserId(), reserve)) {
+        for (Reserve reserve2 : reserves.values()) {
 
+            if (reserve2.getUserId().equals(reserve.getUserId())
+                    && reserve2.getDate().getTime() == reserve.getDate().getTime()) {
                 return "not-allowed";
             }
-        }
-        if (library.countReserves(reserve) >= library.getDeskNumber()) {
-            return "not-available";
 
         }
-        library.addReserve2(reserve);
+
+        if (countReservation(reserve) == library.getDeskNumber()) {
+            return "not-available";
+        }
+
+        reserves.put(reserve.getUserId(), reserve);
         return "success";
+
+    }
+
+    /**
+     * Counts the number of reservations for the same library and date as the
+     * provided reservation.
+     *
+     * @param reserve The reservation for which the count is to be determined.
+     * @return The number of reservations conflicting with the provided reservation.
+     */
+    public int countReservation(Reserve reserve) {
+
+        int count = 0;
+        for (Reserve reserve2 : reserves.values()) {
+            if (reserve2.getLibraryId().equals(reserve.getLibraryId())
+                    && reserve2.getDate().getTime() == reserve.getDate().getTime() && conflict(reserve, reserve2)) {
+                count++;
+            }
+
+        }
+        return count;
+
+    }
+
+    /**
+     * Checks if there is a time conflict between two reservations.
+     *
+     * @param reserve1 The first reservation.
+     * @param reserve2 The second reservation.
+     * @return True if there is a time conflict between the reservations, false
+     *         otherwise.
+     */
+    public boolean conflict(Reserve reserve1, Reserve reserve2) {
+
+        LocalTime t1 = LocalTime.parse(reserve1.getStartDate());
+        LocalTime t2 = LocalTime.parse(reserve1.getEndDate());
+        LocalTime t3 = LocalTime.parse(reserve2.getStartDate());
+        LocalTime t4 = LocalTime.parse(reserve2.getEndDate());
+        if (timeToMin(t1) <= timeToMin(t3) && timeToMin(t3) <= timeToMin(t2)) {
+            return true;
+        }
+        if (timeToMin(t1) <= timeToMin(t4) && timeToMin(t4) <= timeToMin(t2)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Converts the given time to minutes.
+     *
+     * @param time The time to be converted.
+     * @return The time represented in minutes.
+     */
+    public long timeToMin(LocalTime time) {
+        long miiin;
+        miiin = time.getHour() * 60 + time.getMinute();
+        return miiin;
+
+    }
+
+    public void res() {
+
+        for (Reserve reserve1Reserve : reserves.values()) {
+
+            System.out.println(reserve1Reserve.getStartDate());
+        }
 
     }
 
