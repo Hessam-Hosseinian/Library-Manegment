@@ -1,3 +1,6 @@
+
+//?----------------------------------------------------------------------------------------------------------------------
+
 public class Student {
     private String studentId;
     private String password;
@@ -19,7 +22,19 @@ public class Student {
         this.address = address;
         this.debt = 0;
     }
+    // ?----------------------------------------------------------------------------------------------------------------------
+    // !------------------------------------------------------------------------------
 
+    /**
+     * Edits the information of a student based on the provided Student object.
+     * If a field in the provided Student object is not equal to "-", it updates the
+     * corresponding field in this object.
+     * This method allows partial updates of student information.
+     *
+     * @param student The Student object containing the updated information.
+     *                If a field in this object is not equal to "-", it will be
+     *                updated in this object.
+     */
     public void edit(Student student) {
         if (!student.getPassword().equals("-")) {
             setPassword(student.getPassword());
@@ -40,6 +55,10 @@ public class Student {
             setAddress(student.getAddress());
         }
     }
+    // !------------------------------------------------------------------------------
+
+    // ?----------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------- Seters and Geters
 
     public String getStudentId() {
         return this.studentId;
@@ -102,7 +121,8 @@ public class Student {
     }
 
     public void setDebt(int debt) {
-        this.debt += debt;
+        this.debt += debt; // increse the debt
     }
 
 }
+// ?----------------------------------------------------------------------------------------------------------------------

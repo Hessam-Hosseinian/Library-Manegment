@@ -1,3 +1,4 @@
+//?----------------------------------------------------------------------------------------------------------------------
 
 public class Book {
 
@@ -22,6 +23,18 @@ public class Book {
         this.libraryId = libraryId;
     }
 
+    // ?----------------------------------------------------------------------------------------------------------------------
+    // !------------------------------------------------------------------------------
+    /**
+     * Edits the information of a book based on the provided Book object.
+     * If a field in the provided Book object is not equal to "-", it updates the
+     * corresponding field in this object.
+     * This method allows partial updates of book information.
+     *
+     * @param book The Book object containing the updated information.
+     *             If a field in this object is not equal to "-", it will be updated
+     *             in this object.
+     */
     public void edit(Book book) {
         if (!book.getTitle().equals("-")) {
             setTitle(book.getTitle());
@@ -42,6 +55,9 @@ public class Book {
             setCategoryId(book.getCategoryId());
         }
     }
+    // !------------------------------------------------------------------------------
+    // ?----------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------- Seters and Geters
 
     public String getBookId() {
         return this.bookId;
@@ -106,5 +122,7 @@ public class Book {
     public void setLibraryId(String libraryId) {
         this.libraryId = libraryId;
     }
+    // ----------------------------------- Seters and Geters
 
 }
+// ?----------------------------------------------------------------------------------------------------------------------

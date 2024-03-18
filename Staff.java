@@ -1,3 +1,5 @@
+
+//?----------------------------------------------------------------------------------------------------------------------
 public class Staff {
 
     private String StaffId;
@@ -20,7 +22,19 @@ public class Staff {
         this.address = address;
         this.debt = 0;
     }
+    // ?----------------------------------------------------------------------------------------------------------------------
+    // !------------------------------------------------------------------------------
 
+    /**
+     * Edits the information of a staff member based on the provided Staff object.
+     * If a field in the provided Staff object is not equal to "-", it updates the
+     * corresponding field in this object.
+     * This method allows partial updates of staff information.
+     *
+     * @param staff The Staff object containing the updated information.
+     *              If a field in this object is not equal to "-", it will be
+     *              updated in this object.
+     */
     public void edit(Staff staff) {
         if (!staff.getPassword().equals("-")) {
             setPassword(staff.getPassword());
@@ -41,6 +55,11 @@ public class Staff {
             setAddress(staff.getAddress());
         }
     }
+    // !------------------------------------------------------------------------------
+
+    // ?----------------------------------------------------------------------------------------------------------------------
+
+    // ----------------------------------- Seters and Geters
 
     public String getStaffId() {
         return this.StaffId;
@@ -104,7 +123,9 @@ public class Staff {
     }
 
     public void setDebt(int debt) {
-        this.debt += debt;
+        this.debt += debt; // increse the debt
     }
+    // ----------------------------------- Seters and Geters
 
 }
+// ?----------------------------------------------------------------------------------------------------------------------

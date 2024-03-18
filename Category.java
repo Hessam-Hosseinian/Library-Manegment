@@ -1,3 +1,4 @@
+//?----------------------------------------------------------------------------------------------------------------------
 
 public class Category {
     private String categoryId;
@@ -7,6 +8,7 @@ public class Category {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
     }
+    // ----------------------------------- Seters and Geters
 
     public String getCategoryId() {
         return categoryId;
@@ -15,5 +17,7 @@ public class Category {
     public String getCategoryName() {
         return categoryName;
     }
+    // ----------------------------------- Seters and Geters
 
 }
+// ?----------------------------------------------------------------------------------------------------------------------

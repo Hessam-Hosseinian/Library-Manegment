@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+//?----------------------------------------------------------------------------------------------------------------------
 
 public class CommandOperation {
 
@@ -34,12 +35,10 @@ public class CommandOperation {
         }
         // !----------------------------------------------------------------- LIBRARY
         if (input.contains("add-library")) {
-
             addLibrary(args[0], args[1], args[2], Integer.valueOf(args[3]), args[4]);
         }
         // !----------------------------------------------------------------- CATEGORY
         else if (input.contains("add-category")) {
-
             addCategory(args[0], args[1]);
         }
         // !----------------------------------------------------------------- BOOK
@@ -112,14 +111,11 @@ public class CommandOperation {
 
         // !----------------------------------------------------------------- SEARCH
         else if (input.contains("search-user")) {
-
             searchUser(args[0], args[1], args[2]);
         }
 
         else if (input.contains("search")) {
-
             search(args[0]);
-
         }
 
         // !----------------------------------------------------------------- REPORT
@@ -166,10 +162,13 @@ public class CommandOperation {
      */
     public void addLibrary(String libraryId, String libraryName, String foundationYear, int deskNumber,
             String address) {
+
         Library library = new Library(libraryId, libraryName, foundationYear, deskNumber, address);
+
         System.out.println(addLibrary2(library));
 
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Adds a library to the system.
@@ -181,8 +180,10 @@ public class CommandOperation {
      */
     public String addLibrary2(Library library) {
         if (libraries.get(library.getLibraryId()) != null) {
-            return "duplicate-id";
+
+            return "duplicate-id";// library exists
         }
+
         libraries.put(library.getLibraryId(), library);
         return "success";
     }
@@ -195,9 +196,12 @@ public class CommandOperation {
      * @param categoryName The name of the category.
      */
     public void addCategory(String categoryId, String categoryName) {
+
         Category category = new Category(categoryId, categoryName);
+
         System.out.println(addCategory(category));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Adds a new Category object to categories, if its ID is unique.
@@ -208,7 +212,8 @@ public class CommandOperation {
      */
     public String addCategory(Category category) {
         if (categories.get(category.getCategoryId()) != null) {
-            return "duplicate-id";
+
+            return "duplicate-id"; // category exists
         }
         categories.put(category.getCategoryId(), category);
         return "success";
@@ -231,10 +236,13 @@ public class CommandOperation {
      */
     public void addBook(String id, String name, String authorName, String publisher, String year, int numBook,
             String categoryId, String libraryId) {
+
         Book book = new Book(id, name, authorName, publisher, year, numBook,
                 categoryId, libraryId);
+
         System.out.println(addBook2(book));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits the details of an existing book in the management system.
@@ -258,6 +266,7 @@ public class CommandOperation {
 
         System.out.println(editBook2(book));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a book from the management system.
@@ -269,6 +278,7 @@ public class CommandOperation {
     public void removeBook(String bookId, String libraryId) {
         System.out.println(removeBook2(bookId, libraryId));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Adds a new Book object to the library's collection of books.
@@ -283,19 +293,20 @@ public class CommandOperation {
         Library library = libraries.get(book.getLibraryId());
         if (library == null) {
 
-            return "not-found";
+            return "not-found"; // library not found
         }
         Category category = categories.get(book.getCategoryId());
         if (category == null) {
 
-            return "not-found";
+            return "not-found"; // category not found
         }
         if (library.getBook(book.getBookId()) != null) {
-            return "duplicate-id";
+            return "duplicate-id"; // book exists
         }
         library.addBook(book);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits an existing Book object in the library's books.
@@ -308,21 +319,22 @@ public class CommandOperation {
         Library library = libraries.get(book.getLibraryId());
         if (library == null) {
 
-            return "not-found";
+            return "not-found";// library not found
         }
         Category category = categories.get(book.getCategoryId());
         if (category == null) {
 
-            return "not-found";
+            return "not-found";// category not found
         }
         Book book1 = library.getBook(book.getBookId());
         if (book1 == null) {
 
-            return "not-found";
+            return "not-found"; // book not found
         }
         book1.edit(book);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a book from the library's collection.
@@ -339,13 +351,13 @@ public class CommandOperation {
     public String removeBook2(String bookId, String libraryId) {
         Library library = libraries.get(libraryId);
         if (library == null) {
-            return "not-found";
-        }
-        if (library.countDocs(bookId) != 0) {
-            return "not-allowed";
+            return "not-found";// library not found
         }
         if (library.getBook(bookId) == null) {
-            return "not-found";
+            return "not-found";// book not found
+        }
+        if (library.countDocs(bookId) != 0) {
+            return "not-allowed";// some copies of the book are borrowed
         }
         library.removeBook(bookId);
         return "success";
@@ -371,6 +383,7 @@ public class CommandOperation {
                 libraryId);
         System.out.println(addThesis2(thesis));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits the details of an existing thesis in the management system.
@@ -391,6 +404,7 @@ public class CommandOperation {
                 libraryId);
         System.out.println((editThesis2(thesis)));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a thesis from the management system.
@@ -402,6 +416,7 @@ public class CommandOperation {
     public void removeThesis(String thesisId, String libraryId) {
         System.out.println(removeThesis2(thesisId, libraryId));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Adds a new Thesis object to the library's collection of theses.
@@ -415,18 +430,19 @@ public class CommandOperation {
     public String addThesis2(Thesis thesis) {
         Library library = libraries.get(thesis.getLibraryId());
         if (library == null) {
-            return "not-found";
+            return "not-found";// library not found
         }
         Category category = categories.get(thesis.getCategoryId());
         if (category == null) {
-            return "not-found";
+            return "not-found";// category not found
         }
         if (library.getThesis(thesis.getThesisID()) != null) {
-            return "duplicate-id";
+            return "duplicate-id"; // thesis exists
         }
         library.addThesis(thesis);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits an existing Thesis object in the library's collection of theses.
@@ -438,19 +454,20 @@ public class CommandOperation {
     public String editThesis2(Thesis thesis) {
         Library library = libraries.get(thesis.getLibraryId());
         if (library == null) {
-            return "not-found";
+            return "not-found"; // library not found
         }
         Category category = categories.get(thesis.getCategoryId());
         if (category == null) {
-            return "not-found";
+            return "not-found"; // category not found
         }
         Thesis thesis1 = library.getThesis(thesis.getThesisID());
         if (thesis1 == null) {
-            return "not-found";
+            return "not-found";// thesis not found
         }
         thesis1.edit(thesis);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a thesis from the library's collection.
@@ -466,13 +483,13 @@ public class CommandOperation {
     public String removeThesis2(String thesisId, String libraryId) {
         Library library = libraries.get(libraryId);
         if (library == null) {
-            return "not-found";
-        }
-        if (library.countDocs(thesisId) != 0) {
-            return "not-allowed";
+            return "not-found";// library not found
         }
         if (library.getThesis(thesisId) == null) {
-            return "not-found";
+            return "not-found"; // thesis not found
+        }
+        if (library.countDocs(thesisId) != 0) {
+            return "not-allowed"; // thesis copy is under borroewd
         }
         library.removeThesis(libraryId);
         return "success";
@@ -498,6 +515,7 @@ public class CommandOperation {
                 birthday, address);
         System.out.println(addStudent2(student));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits the details of an existing student in the management system.
@@ -518,6 +536,7 @@ public class CommandOperation {
                 birthday, address);
         System.out.println(editStudent2(student));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a student from the management system.
@@ -528,6 +547,7 @@ public class CommandOperation {
     public void removeStudent(String studentId) {
         System.out.println(removeStudent2(studentId));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Adds a new Student object to the collection of students.
@@ -538,11 +558,12 @@ public class CommandOperation {
      */
     public String addStudent2(Student student) {
         if (students.get(student.getStudentId()) != null) {
-            return "duplicate-id";
+            return "duplicate-id";// the student exists
         }
         students.put(student.getStudentId(), student);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits an existing Student object in the collection of students.
@@ -554,11 +575,12 @@ public class CommandOperation {
     public String editStudent2(Student student) {
         Student student1 = students.get(student.getStudentId());
         if (student1 == null) {
-            return "not-found";
+            return "not-found"; // student not found
         }
         student1.edit(student);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a student from the collection of students.
@@ -572,15 +594,15 @@ public class CommandOperation {
     public String removeStudent2(String studentId) {
         Student student = students.get(studentId);
         if (student == null) {
-            return "not-found";
+            return "not-found"; // student not found
+        }
+        if (student.getDebt() != 0) {
+            return "not-allowed";// student has debt to pay
         }
         for (Library library : new ArrayList<>(libraries.values())) {
             if (library.checkUserBorrows(studentId) != null) {
-                return "not-allowed";
+                return "not-allowed"; // the student has a borrowed book or thesis
             }
-        }
-        if (student.getDebt() != 0) {
-            return "not-allowed";
         }
         students.remove(studentId);
         return "success";
@@ -605,6 +627,7 @@ public class CommandOperation {
                 address);
         System.out.println(addStaff2(staff));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits the details of an existing staff member in the management system.
@@ -624,6 +647,7 @@ public class CommandOperation {
                 address);
         System.out.println(editStaff2(staff));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a staff member from the management system.
@@ -633,6 +657,7 @@ public class CommandOperation {
     public void removeStaff(String StaffId) {
         System.out.println(removeStaff2(StaffId));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Adds a new Staff object to the collection of staff members.
@@ -643,11 +668,12 @@ public class CommandOperation {
      */
     public String addStaff2(Staff staff) {
         if (staffs.get(staff.getStaffId()) != null) {
-            return "duplicate-id";
+            return "duplicate-id"; // staff exists
         }
         staffs.put(staff.getStaffId(), staff);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Edits an existing Staff object in the collection of staff members.
@@ -659,11 +685,12 @@ public class CommandOperation {
     public String editStaff2(Staff staff) {
         Staff staff1 = staffs.get(staff.getStaffId());
         if (staff1 == null) {
-            return "not-found";
+            return "not-found"; // staff not found
         }
         staff1.edit(staff);
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Removes a staff member from the collection of staff members.
@@ -677,14 +704,14 @@ public class CommandOperation {
     public String removeStaff2(String staffId) {
         Staff staff = staffs.get(staffId);
         if (staff == null) {
-            return "not-found";
+            return "not-found";// staff not found
         }
         if (staff.getDebt() != 0) {
-            return "not-allowed";
+            return "not-allowed";// staff has debt to pay
         }
         for (Library library : new ArrayList<>(libraries.values())) {
             if (library.checkUserBorrows(staffId) != null) {
-                return "not-allowed";
+                return "not-allowed";// staff has book or thesis under borrowed
             }
         }
         staffs.remove(staffId);
@@ -718,6 +745,7 @@ public class CommandOperation {
         System.out.println(borrow2(borrow, password));
 
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Returns an item to the library on behalf of a user.
@@ -741,6 +769,7 @@ public class CommandOperation {
         Borrow borrow = new Borrow(date, userId, docId, libraryId);
         System.out.println(returning2(borrow, pass));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Handles the borrowing process for a user, checking user existence, password
@@ -758,22 +787,22 @@ public class CommandOperation {
      */
     public String borrow2(Borrow borrow, String password) {
         if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
-            return "not-found"; // user not-found
+            return "not-found"; // user not found
         }
         if (borrow.isStudent()) {
             Student student = students.get(borrow.getUserId());
             if (!student.getPassword().equals(password)) {
-                return "invalid-pass";// user is student and its pass is wrong
+                return "invalid-pass";// user is student and its password is wrong
             }
         } else {
             Staff staff = staffs.get(borrow.getUserId());
             if (!staff.getPassword().equals(password)) {
-                return "invalid-pass";// user is staff and its pass is wrong
+                return "invalid-pass";// user is staff and its password is wrong
             }
         }
         Library library = libraries.get(borrow.getLibraryId());
         if (library == null) {
-            return "not-found"; // library not-found
+            return "not-found"; // library not found
         }
         if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
             return "not-found"; // there is no book or thesis whit this ID
@@ -783,6 +812,7 @@ public class CommandOperation {
         }
         return "success";
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Counts the number of items borrowed by a user across all libraries.
@@ -798,6 +828,7 @@ public class CommandOperation {
         }
         return borrowed;
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Handles the returning process for a user, checking user existence, password
@@ -813,7 +844,7 @@ public class CommandOperation {
      */
     public String returning2(Borrow borrow, String pass) {
         if (!borrow.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
-            return "not-found"; // user not-found
+            return "not-found"; // user not found
         }
         if (borrow.isStudent()) {
             Student student = students.get(borrow.getUserId());
@@ -834,7 +865,7 @@ public class CommandOperation {
         if (!borrow.checkDoc(library.getBookIds(), library.getThesisIds())) {
             return "not-found";// there is no book or thesis whit this ID
         }
-        Borrow borrowHelp = library.checkUserBorrows(borrow.getUserId(), borrow.getStuffId());
+        Borrow borrowHelp = library.checkUserBorrows(borrow.getUserId(), borrow.getDocumentId());
         if (borrowHelp == null) {
             return "not-found"; // there is no borrow that we want to return it
         }
@@ -844,10 +875,10 @@ public class CommandOperation {
         }
         if (borrow.isStudent()) {
             students.get(borrow.getUserId()).setDebt(debt);
-            return "" + debt;
+            return "" + debt;// count debt
         }
         staffs.get(borrow.getUserId()).setDebt(debt);
-        return "" + debt;
+        return "" + debt;// count debt
     }
 
     // !----------------------------------------------------------------- SEARCH
@@ -860,6 +891,7 @@ public class CommandOperation {
     public void search(String key) {
         System.out.println(search2(key));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Searches for users in the library management system based on the provided
@@ -873,6 +905,7 @@ public class CommandOperation {
 
         System.out.println(searchUser2(userId, pass, key));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Searches for the given key across all libraries and generates a sorted list
@@ -900,6 +933,7 @@ public class CommandOperation {
         stringBuilder = stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return stringBuilder;
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Searches for the given key across all libraries and generates a sorted list
@@ -918,23 +952,28 @@ public class CommandOperation {
         Staff staff = staffs.get(userId);
 
         if (staff == null && student == null) {
-            return new StringBuilder("not-found");
+            return new StringBuilder("not-found");// there is no staff and student with the userid
 
-        } else if (staff == null) {
+        }
+
+        else if (staff == null) {
 
             if (!student.getPassword().equals(pass)) {
 
-                return new StringBuilder("invalid-pass");
+                return new StringBuilder("invalid-pass");// invalid passwoed for student
             }
-        } else if (student == null) {
+        }
+
+        else if (student == null) {
 
             if (!staff.getPassword().equals(pass)) {
-                return new StringBuilder("invalid-pass");
+                return new StringBuilder("invalid-pass");// invalid passwoed for student
             }
         }
 
         return searchUser3(key);
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Searches for the given key among students' and staff members' first and last
@@ -964,7 +1003,7 @@ public class CommandOperation {
             }
         }
         ArrayList<String> outputArray = new ArrayList<>(output);
-        Collections.sort(outputArray);
+        Collections.sort(outputArray); // sort the list of resulst
         for (String i : outputArray) {
             searchID.append(i);
             searchID.append("|");
@@ -986,9 +1025,20 @@ public class CommandOperation {
         System.out.println(reportPenalties2());
     }
 
+    // *------------------------------------------------------------------------------
+    /**
+     * Prints a report of documents within a specified category.
+     * This method generates and prints a report of documents belonging to the
+     * specified category
+     * by calling the categoryReport2 method and outputting the result to the
+     * console.
+     *
+     * @param categoryId The ID of the category for which the report is generated.
+     */
     public void categoryReport(String categoryId) {
         System.out.println(categoryReport2(categoryId));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Generates a report for a specific library in the management system.
@@ -999,6 +1049,7 @@ public class CommandOperation {
     public void libraryReport(String libraryId) {
         System.out.println(libraryReport2(libraryId));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Generates a report of items that have passed their deadline for return in a
@@ -1018,6 +1069,7 @@ public class CommandOperation {
         Date date = new Date(utilDate.getTime());
         System.out.println(reportPasseDeadline2(libraryId, date));
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Generates a report of the total penalties accrued by both staff and students.
@@ -1035,6 +1087,7 @@ public class CommandOperation {
         }
         return "" + Penalties;
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Generates a report for the specified category, showing the number of books
@@ -1048,7 +1101,7 @@ public class CommandOperation {
     public String categoryReport2(String categoryId) {
         Category category = categories.get(categoryId);
         if (category == null) {
-            return "not-found";
+            return "not-found";// category not found
         }
 
         int booksCount = 0;
@@ -1063,6 +1116,7 @@ public class CommandOperation {
 
         return booksCount + " " + thesesCount;
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Generates a report for the specified library.
@@ -1075,10 +1129,11 @@ public class CommandOperation {
     public String libraryReport2(String libraryId) {
         Library library = libraries.get(libraryId);
         if (library == null) {
-            return "not-found";
+            return "not-found";// library not found
         }
         return library.libraryReport();
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Generates a report of items that have passed their deadline in the specified
@@ -1096,11 +1151,11 @@ public class CommandOperation {
         StringBuilder output;
         Library library = libraries.get(libraryId);
         if (library == null) {
-            return new StringBuilder("not-found");
+            return new StringBuilder("not-found");// library not found
         }
         output = library.reportPassedDeadline(date);
         if (output.length() == 0) {
-            return new StringBuilder("none");
+            return new StringBuilder("none");// there is no pssed deadline
         }
         output = output.deleteCharAt(output.length() - 1);
         return output;
@@ -1132,6 +1187,7 @@ public class CommandOperation {
         System.out.println(reserveseat2(reserve, password));
 
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Attempts to reserve a seat based on the provided reservation details and
@@ -1150,46 +1206,49 @@ public class CommandOperation {
     public String reserveseat2(Reserve reserve, String password) {
 
         if (!reserve.checkUser(new HashSet<>(students.keySet()), new HashSet<>(staffs.keySet()))) {
-            return "not-found";
-        }
-        Library library = libraries.get(reserve.getLibraryId());
-        if (library == null) {
-            return "not-found";
+            return "not-found";// user not foدnd
         }
         if (reserve.isStudent()) {
             Student student = students.get(reserve.getUserId());
             if (!student.getPassword().equals(password)) {
-                return "invalid-pass";
-            }
-        } else {
-            Staff staff = staffs.get(reserve.getUserId());
-            if (!staff.getPassword().equals(password)) {
-                return "invalid-pass";
+                return "invalid-pass"; // user is student and its password is wrong
             }
         }
 
-        if (reserve.counthours()) {
+        else {
+            Staff staff = staffs.get(reserve.getUserId());
+            if (!staff.getPassword().equals(password)) {
+                return "invalid-pass";// user is staff and its password is wrong
+            }
+        }
 
-            return "not-allowed";
+        Library library = libraries.get(reserve.getLibraryId());
+        if (library == null) {
+            return "not-found"; // library not found
+        }
+        if (reserve.countDuration()) {
+
+            return "not-allowed";// the raservation`s duration is over the 8 hours
         }
 
         for (Reserve reserve2 : reserves.values()) {
 
             if (reserve2.getUserId().equals(reserve.getUserId())
                     && reserve2.getDate().getTime() == reserve.getDate().getTime()) {
-                return "not-allowed";
+                return "not-allowed";// the user has reservation in the current day
             }
 
         }
 
         if (countReservation(reserve) == library.getDeskNumber()) {
-            return "not-available";
+            return "not-available"; // the library has not desk to use
         }
 
         reserves.put(reserve.getUserId(), reserve);
         return "success";
 
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Counts the number of reservations for the same library and date as the
@@ -1211,6 +1270,7 @@ public class CommandOperation {
         return count;
 
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Checks if there is a time conflict between two reservations.
@@ -1235,6 +1295,7 @@ public class CommandOperation {
 
         return false;
     }
+    // *------------------------------------------------------------------------------
 
     /**
      * Converts the given time to minutes.
@@ -1248,14 +1309,7 @@ public class CommandOperation {
         return miiin;
 
     }
-
-    public void res() {
-
-        for (Reserve reserve1Reserve : reserves.values()) {
-
-            System.out.println(reserve1Reserve.getStartDate());
-        }
-
-    }
+    // *------------------------------------------------------------------------------
 
 }
+// ?----------------------------------------------------------------------------------------------------------------------

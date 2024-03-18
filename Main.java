@@ -1,6 +1,7 @@
 
 import java.text.ParseException;
 import java.util.Scanner;
+//?----------------------------------------------------------------------------------------------------------------------
 
 public class Main {
     public static void main(String[] args) throws ParseException {
@@ -10,11 +11,12 @@ public class Main {
         CommandOperation commandOperation = new CommandOperation();
         while (!input.equals("finish")) {
             input = scanner.nextLine();
-            if (input.equals("res")) {
 
-                commandOperation.res();
+            // if (input.equals("test")) { // for test and debugging
 
-            }
+            // commandOperation.test();
+
+            // }
 
             commandOperation.input(input);
         }
@@ -22,3 +24,4 @@ public class Main {
         scanner.close();
     }
 }
+// ?----------------------------------------------------------------------------------------------------------------------
